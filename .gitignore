@@ -1,0 +1,33 @@
+# Compilados
+target/
+*.class
+
+# IDEs
+.idea/
+*. iml
+*. iws
+*. ipr
+. vscode/
+. eclipse/
+.settings/
+
+# Logs
+*.log
+logs/
+
+# Base de datos H2 (local)
+data/
+*. db
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Maven wrapper (opcional, pero mejor no subirlo)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Carpetas específicas de IDEs
+.vscode/
+.eclipse/
