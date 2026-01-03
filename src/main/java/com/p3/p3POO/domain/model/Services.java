@@ -1,4 +1,4 @@
 package com.p3.p3POO.domain.model;
 
-public class Service {
+public class Services {
 }
