@@ -1,6 +1,6 @@
 package com.p3.p3POO.domain.model.product;
 
-import com.p3.p3POO.domain.model.TCategory;
+import com.p3.p3POO.domain.model.Enums.TCategory;
 
 public class Product {
     private final Integer id;
