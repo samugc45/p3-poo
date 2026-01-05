@@ -1,4 +1,4 @@
-package com.p3.p3POO.domain.model.Enums;
+package com.p3.p3POO.domain.model.enums;
 
 public enum TCategory {
     MERCH(0.0),
