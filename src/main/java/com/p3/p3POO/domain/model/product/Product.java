@@ -2,7 +2,7 @@ package com.p3.p3POO.domain.model.product;
 
 import com.p3.p3POO.domain.model.TCategory;
 
-public class Product {git stat
+public class Product {
     private final Integer id;
     private String name;
     private TCategory category;

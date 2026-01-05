@@ -1,4 +1,4 @@
-package com.p3.p3POO;
+package com.p3.p3POO.infrastructure.command;
 
 import org.springframework.boot. CommandLineRunner;
 import org. springframework.stereotype.Component;
