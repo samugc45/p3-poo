@@ -57,7 +57,6 @@ public class ServiceServiceImpl implements ServiceService {
         serviceRepository.deleteById(id);
     }
 
-    @Override
     public List<Service> getServicesByType(ServiceType serviceType) {
         return serviceRepository.findByServiceType(serviceType);
     }
