@@ -1,42 +1,46 @@
 package com.p3.p3POO.domain.model.service;
 
 import com.p3.p3POO.domain.model.enums.ServiceType;
-import com.p3.p3POO.domain.model.interfaces.DateValidatable;
-import com.p3.p3POO.domain.model.interfaces.IdGenerable;
+import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-import java.time.LocalDate;
+@Data
+@Entity
+@Table(name = "services")
+public class Service {
 
-public class Service implements DateValidatable {
-    private final String id;
-    private final ServiceType serviceType;
-    private final LocalDate maxUsageDate;
-    private Double calculatedPrice;
+    @Id
+    private String id;  // Formato: 1S, 2S, 3S, etc.  (numérico + S)
 
-    public Service(ServiceType serviceType) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ServiceType serviceType;
+
+    @Column(nullable = false)
+    private LocalDate maxUsageDate;  // Fecha máxima de uso
+
+    // Los servicios NO tienen precio al crearlos (se factura después)
+    // NO tienen nombre (solo ID y tipo)
+
+    // Constructor sin argumentos (JPA)
+    public Service() {}
+
+    // Constructor completo
+    public Service(String id, ServiceType serviceType, LocalDate maxUsageDate) {
+        this.id = id;
         this.serviceType = serviceType;
         this.maxUsageDate = maxUsageDate;
-        this.id = id;
-        this.calculatedPrice = null;
     }
 
-    public String getId() { return id; }
-    public ServiceType getServiceType() { return serviceType; }
-    public LocalDate getMaxUsageDate() { return maxUsageDate; }
-    public Double getCalculatedPrice() { return calculatedPrice; }
-
-    public void setCalculatedPrice(Double calculatedPrice) {
-        this.calculatedPrice = calculatedPrice;
+    // Validar si el servicio puede agregarse en una fecha determinada
+    public boolean isValidForDate(LocalDate currentDate) {
+        return currentDate. isBefore(maxUsageDate) || currentDate.isEqual(maxUsageDate);
     }
 
-    public Double calculateFinalPrice() {
-        // falta la logica
-        return calculatedPrice;
-    }
-
-    @Override
-    public boolean isValidForDate(LocalDate date) {
-        return date != null && !date.isAfter(maxUsageDate); // válido si date <= maxUsageDate
+    // Generador de ID secuencial:  1S, 2S, 3S, etc.
+    public static String generateId(int sequenceNumber) {
+        return sequenceNumber + "S";
     }
 }

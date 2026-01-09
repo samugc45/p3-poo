@@ -1,17 +1,16 @@
 package com.p3.p3POO.application.service;
 
 import com.p3.p3POO.domain.model.service.Service;
+import com.p3.p3POO.domain.model.enums.ServiceType;
 
-import java.util.List;
+import java.time.LocalDate;
+import java. util.List;
 
 public interface ServiceService {
-    List<Service> getAllServices();
 
-    Service getServiceById(String id);
-
-    Service createService(Service service);
-
-    Service updateService(String id, Service service);
-
-    void deleteService(String id);
+    Service createService(ServiceType serviceType, LocalDate maxUsageDate);
+    Service findServiceById(String id);
+    List<Service> findAllServices();
+    List<Service> findServicesByType(ServiceType type);
+    boolean serviceExists(String id);
 }

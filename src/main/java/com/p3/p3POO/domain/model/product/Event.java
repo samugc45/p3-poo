@@ -1,50 +1,56 @@
-package com.p3.p3POO.domain.model.product;
+package com.p3.p3POO.domain. model. product;
 
 import com.p3.p3POO.domain.model.enums.TCategory;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok. EqualsAndHashCode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "events")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Event extends Product {
 
-    // Constante definida en el enunciado
-    public static final int MAX_PARTICIPANTS_LIMIT = 100;
+    @Column(nullable = false)
+    protected LocalDateTime eventDate;
 
-    private final LocalDateTime eventDate;
-    private final int maxParticipants;
+    @Column(nullable = false)
+    protected Integer maxParticipants;
 
-    public Event(int id, String name, Double price, LocalDateTime eventDate, int maxParticipants) {
-        // Llamamos al constructor de Product que NO pide categoría
-        super(id, name, price);
+    @Column(nullable = false)
+    protected Integer actualPeople;
+
+    // Constructor sin argumentos (JPA)
+    protected Event() {
+        super();
+        this.maxParticipants = 100;
+        this.actualPeople = 0;
+    }
+
+    // Constructor con parámetros
+    protected Event(String id, String name, Double basePrice, LocalDateTime eventDate, Integer maxParticipants) {
+        super(id, name, basePrice, null);  // Events NO tienen categoría
         this.eventDate = eventDate;
-        this.maxParticipants = maxParticipants;
+        this.maxParticipants = maxParticipants != null ? maxParticipants :  100;
+        this.actualPeople = 0;
     }
 
-    public LocalDateTime getEventDate() {
-        return eventDate;
-    }
-
-    public int getMaxParticipants() {
-        return maxParticipants;
-    }
-
-    /**
-     * Sobrescribimos toString para mostrar la fecha y participantes.
-     */
+    // ✅ IMPLEMENTACIÓN OBLIGATORIA de calculateFinalPrice() heredado de Product
     @Override
-    public String toString() {
-        // FIX: Formato solo fecha (sin hora) para coincidir con el output esperado
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // FIX: Ajuste de texto "date of Event:" y "max people allowed:"
-        return super.toString().replace("}", "") +
-                ", date of Event:" + eventDate.format(formatter) +
-                ", max people allowed:" + maxParticipants +
-                "}";
+    public Double calculateFinalPrice() {
+        return basePrice * actualPeople;
     }
 
+    // Sobrescribir setCategory para que lance excepción
     @Override
     public void setCategory(TCategory category) {
-        throw new UnsupportedOperationException("Error: Events (Food/Meeting) cannot have a category.");
+        throw new UnsupportedOperationException("Events cannot have a category");
     }
+
+    // ⚠️ isValidForDate() NO se implementa aquí (sigue siendo abstracto)
+    // Las clases hijas (MeetingProduct, FoodProduct) DEBEN implementarlo
 }

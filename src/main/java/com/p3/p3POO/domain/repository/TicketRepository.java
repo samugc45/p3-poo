@@ -1,26 +1,35 @@
 package com.p3.p3POO.domain.repository;
 
-import com.p3.p3POO.domain.model.Ticket;
-import com.p3.p3POO.domain.model.enums.TicketState;
+import com.p3.p3POO.domain.model. Ticket;
+import com.p3.p3POO.domain.model.enums. TicketState;
+import com.p3.p3POO.domain.model.user. Cashier;
+import com.p3.p3POO.domain.model.user.Client;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework. stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface TicketRepository {
+@Repository
+public interface TicketRepository extends JpaRepository<Ticket, String> {
 
-    List<Ticket> findAll();
+    // Buscar tickets por cajero
+    List<Ticket> findByCashier(Cashier cashier);
 
-    Ticket findById(String id);
+    // Buscar tickets por cajero ordenados por ID
+    List<Ticket> findByCashierOrderByIdAsc(Cashier cashier);
 
-    Ticket save(Ticket ticket);
+    // Buscar tickets por cliente
+    List<Ticket> findByClient(Client client);
 
-    void deleteById(String id);
-
+    // Buscar tickets por estado
     List<Ticket> findByState(TicketState state);
 
-    List<Ticket> findByClientId(String clientId);
+    // Buscar tickets por cajero y estado
+    List<Ticket> findByCashierAndState(Cashier cashier, TicketState state);
 
-    List<Ticket> findByCashierId(String cashierId);
+    // Verificar si existe un ticket con ese ID
+    boolean existsById(String id);
 
-    Boolean existsById(String id);
+    // Obtener todos los tickets ordenados por cajero
+    List<Ticket> findAllByOrderByCashierIdAsc();
 }

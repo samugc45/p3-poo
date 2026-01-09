@@ -1,119 +1,132 @@
-package com.p3.p3POO.application.service.impl;
+package com.p3.p3POO.application. service.impl;
 
-import com.p3.p3POO.application.factory.TicketFactory;
+import com. p3.p3POO. application.service.TicketService;
+import com.p3.p3POO.application.service.UserService;
 import com.p3.p3POO.application.service.ProductService;
 import com.p3.p3POO.application.service.ServiceService;
-import com.p3.p3POO.application.service.UserService;
 import com.p3.p3POO.domain.model.Ticket;
+import com.p3.p3POO.domain.model. TicketLine;
+import com.p3.p3POO.domain.model.enums.TicketMode;
 import com.p3.p3POO.domain.model.enums.TicketState;
 import com.p3.p3POO.domain.model.product.Product;
 import com.p3.p3POO.domain.model.user.Cashier;
+import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.repository.TicketRepository;
+import com.p3.p3POO.infrastructure.exception.DomainException;
+import org.springframework.transaction. annotation.Transactional;
 
-import java.util.Map;
+import java.util.List;
 
-public class TicketServiceImpl {
-    TicketRepository ticketRepository;
-    TicketFactory ticketFactory;
-    ProductService productService;
-    ServiceService serviceService;
-    UserService userService;
+@org.springframework.stereotype.Service
+@Transactional
+public class TicketServiceImpl implements TicketService {
 
-    public void addProduct(String ticketId, Product p, int quantity) {
-        Ticket t = TicketRepository.findById(ticketId);
-        if (t.getState() == TicketState.CLOSE) {
-            throw new IllegalStateException("Error: No se pueden añadir productos a un ticket cerrado.");
+    private final TicketRepository ticketRepository;
+    private final UserService userService;
+    private final ProductService productService;
+    private final ServiceService serviceService;
+
+    public TicketServiceImpl(TicketRepository ticketRepository,UserService userService, ProductService productService, ServiceService serviceService) {
+        this.ticketRepository = ticketRepository;
+        this.userService = userService;
+        this.productService = productService;
+        this.serviceService = serviceService;
+    }
+
+    @Override
+    public Ticket createTicket(String cashierId, String clientId, TicketMode mode) {
+        Cashier cashier = userService. findCashierById(cashierId);
+        Client client = userService.findClientById(clientId);
+
+        String ticketId = Ticket.generateId();
+        while (ticketRepository.existsById(ticketId)) {
+            ticketId = Ticket. generateId();
         }
-        t.getProducts().put(p, t.getProducts().getOrDefault(p, 0) + quantity);
-        t.setState(TicketState.OPEN);
+
+        Ticket ticket = new Ticket(ticketId, cashier, client, mode);
+        return ticketRepository.save(ticket);
     }
 
-    public void removeProduct(String ticketId, int prodId) {
-        Ticket t = TicketRepository.findById(ticketId);
-        if (t.getState() == TicketState.CLOSE) {
-            throw new IllegalStateException("Error: No se pueden borrar productos de un ticket cerrado.");
+    @Override
+    @Transactional(readOnly = true)
+    public Ticket findTicketById(String ticketId) {
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new DomainException("Ticket not found: " + ticketId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> findAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> findTicketsByCashier(String cashierId) {
+        Cashier cashier = userService. findCashierById(cashierId);
+        return ticketRepository.findByCashier(cashier);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> findTicketsByClient(String clientId) {
+        Client client = userService.findClientById(clientId);
+        return ticketRepository.findByClient(client);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> findTicketsByState(TicketState state) {
+        return ticketRepository.findByState(state);
+    }
+
+    @Override
+    public void addProductToTicket(String ticketId, String productId, Integer quantity) {
+        Ticket ticket = findTicketById(ticketId);
+
+        if (ticket.getState() == TicketState.CLOSE) {
+            throw new DomainException("Cannot add products to a closed ticket");
         }
-        Product remove = null;
-        for (Product p : t.getProducts().keySet()) {
-            if (p.getID() == prodId) {
-                remove = p;
-                break;
-            }
+
+        Product product = productService. findProductById(productId);
+
+        TicketLine line = new TicketLine(ticket, product, quantity);
+        ticket.addLine(line);
+
+        ticketRepository.save(ticket);
+    }
+
+    @Override
+    public void addServiceToTicket(String ticketId, String serviceId, Integer quantity) {
+        Ticket ticket = findTicketById(ticketId);
+
+        if (ticket.getState() == TicketState.CLOSE) {
+            throw new DomainException("Cannot add services to a closed ticket");
         }
 
-        if (remove != null) {
-            t.getProducts().remove(remove);
-            if (t.getProducts().isEmpty()) {
-                t.setState(TicketState.EMPTY);
-            }
+        if (ticket.getMode() != TicketMode.DETAILED) {
+            throw new DomainException("Services can only be added to DETAILED tickets (company clients)");
         }
+
+        com.p3.p3POO.domain.model.service.Service service = serviceService.findServiceById(serviceId);
+
+        TicketLine line = new TicketLine(ticket, service, quantity);
+        ticket.addLine(line);
+
+        ticketRepository.save(ticket);
     }
 
-
-    public boolean containsProduct(String ticketId, Product p) {
-        Ticket t = TicketRepository.findById(ticketId);
-        return t.getProducts().containsKey(p);
-    }
-    public ProductService getProductService(String ticketId) {
-        return ticketRepository.findById(ticketId).getProductService();
-    }
-    public Cashier getCashier(String ticketId) {
-        return ticketRepository.findById(ticketId).getCashier();
+    @Override
+    public Ticket closeTicket(String ticketId) {
+        Ticket ticket = findTicketById(ticketId);
+        ticket.close();
+        return ticketRepository. save(ticket);
     }
 
-    public void setCashier(String ticketId, Cashier cashier) {
-        Ticket t = ticketRepository.findById(ticketId);
-        t.setCashier(cashier);
-    }
-
-    public void closeTicket(String id) {
-        Ticket t = ticketRepository.findById(id);
-        t.setState(TicketState.CLOSE);
-    }
-
-    public Product getProductTicket(String ticketId, Integer productId){
-        Ticket t = ticketRepository.findById(ticketId);
-        return t.getProductService().getProductById(productId);
-    }
-
-
-
-    public String ticketPrint(String ticketId) {
-        double totalPrice = 0;
-        double totalDiscount = 0;
-        StringBuilder sb = new StringBuilder();
-        Ticket t = ticketRepository.findById(ticketId);
-
-        for (Map.Entry<Product, Integer> entry : t.getProducts().entrySet()) {
-            Product p = entry.getKey();
-            int quantity = entry.getValue();
-
-            for (int i = 0; i < quantity; i++) {
-                double discountRate = p.getCategory().getDiscount();
-                double discount = 0.0;
-
-                totalPrice += p.getPrice();
-
-                if (entry.getValue() > 1) {
-                    discount = p.getPrice() * discountRate;
-                    totalDiscount += discount;
-                }
-
-                sb.append(p.toString());
-                if (discount > 0) {
-                    sb.append(" **discount -").append(String.format("%.1f", discount));
-                }
-                sb.append("\n");
-            }
-        }
-        sb.append("Total price: ").append(totalPrice).append("\n");
-        sb.append("Total discount: ").append(totalDiscount).append("\n");
-        sb.append("Final Price: ").append(totalPrice - totalDiscount);
-
-        return sb.toString();
-    }
-    public String toString(String ticketId) {
-        Ticket t = ticketRepository.findById(ticketId);
-        return ticketId + " - " + t.getState();
+    @Override
+    @Transactional(readOnly = true)
+    public Double calculateTicketTotal(String ticketId) {
+        Ticket ticket = findTicketById(ticketId);
+        return ticket.calculateTotal();
     }
 }

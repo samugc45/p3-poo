@@ -1,62 +1,47 @@
 package com.p3.p3POO.domain.model.product;
 
 import com.p3.p3POO.domain.model.enums.TCategory;
+import jakarta.persistence.*;
+import lombok.Data;
 
-public class Product {
-    private final Integer id;
-    private String name;
-    private TCategory category;
-    private Double price;
+import java.time.LocalDate;
 
-    public Product(Integer id, String name, TCategory category, Double price){
+@Data
+@Entity
+@Table(name = "products")
+@Inheritance(strategy = InheritanceType. JOINED)
+public abstract class Product {
+
+    @Id
+    protected String id;  // ← String, no Integer
+
+    @Column(nullable = false, length = 100)
+    protected String name;
+
+    @Column(nullable = false)
+    protected Double basePrice;
+
+    @Enumerated(EnumType.STRING)
+    protected TCategory category;  // ← Category, no TCategory
+
+    protected Product() {}
+
+    protected Product(String id, String name, Double basePrice, TCategory category) {
         this.id = id;
-        this.name = name;
-        this.category = category;
-        this.price = price;
-    }
-
-    public Product(Integer id, String name, Double price){
-        this.id = id;
-        this.name = name;
-        this.price = price;
-    }
-
-    public Integer getID() {
-        return id;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public TCategory getCategory() {
-        return category;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCategory(TCategory category) {
+        this. name = name;
+        this. basePrice = basePrice;
         this.category = category;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+    // Métodos abstractos
+    public abstract Double calculateFinalPrice();
+    public abstract boolean isValidForDate(LocalDate date);
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{class:Product, ");
-        sb.append("id:").append(id).append(", ");
-        sb.append("name:'").append(name).append("', ");
-        sb.append("category:").append(category).append(", ");
-        sb.append("price:").append(price).append("}");
-        return sb.toString();
+    // Aplicar descuento por categoría
+    public Double applyDiscount(Double price) {
+        if (category == null) {
+            return price;
+        }
+        return price * (1 - category.getDiscount());
     }
 }

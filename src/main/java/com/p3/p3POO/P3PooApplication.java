@@ -1,4 +1,4 @@
-package com.p3.p3POO.infrastructure.command;
+package com.p3.p3POO;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

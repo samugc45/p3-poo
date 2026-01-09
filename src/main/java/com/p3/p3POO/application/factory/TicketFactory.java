@@ -1,56 +1,57 @@
-package com.p3.p3POO.application.factory;
+package com.p3.p3POO. application.factory;
 
+import com. p3.p3POO. application.service.TicketService;
 import com.p3.p3POO.application.service.UserService;
-import com.p3.p3POO.application.service.impl.UserServiceImpl;
-import com.p3.p3POO.domain.model.Ticket;
-import com.p3.p3POO.domain.model.interfaces.IdGenerable;
-import com.p3.p3POO.domain.model.user.Cashier;
+import com. p3.p3POO. domain.model. Ticket;
+import com.p3.p3POO.domain. model.enums.TicketMode;
 import com.p3.p3POO.domain.model.user.Client;
+import com.p3.p3POO.domain.model.user.CompanyClient;
+import com.p3.p3POO.infrastructure.exception.DomainException;
+import org.springframework.stereotype. Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ThreadLocalRandom;
+@Component
+public class TicketFactory {
 
-public class TicketFactory implements IdGenerable {
-    UserServiceImpl userService;
-    public Ticket ticketNewComunes(String ticketId, String cashId, String clientId)
-            throws CashierNotFoundException, DuplicatedIdException, ClientNotFoundException {
-        Cashier cashier = u.getCashier(cashId);
-        Client client = userService.getClient(clientId);
-        if (cashier == null) {
-            throw new CashierNotFoundException(cashId);
-        }
-        if (client == null) {
-            throw new ClientNotFoundException(clientId);
-        }
-        if (ticketId == null || ticketId.isBlank()) {
-            ticketId = generateId();
-        } else {
-            String timestamp = generateId();
-            ticketId = ticketId + "-" + timestamp;
-        }
-        if (tickets.containsKey(ticketId))
-            throw new DuplicatedIdException(ticketId);
+    private final TicketService ticketService;
+    private final UserService userService;
 
-        Ticket newTicket = new Ticket(ticketId);
-        tickets.put(ticketId, newTicket);
-
-        cashier.addTicket(newTicket);
-        client.addTicket(newTicket);
-        StringBuilder sb = new StringBuilder();
-        String ticketManualId = newTicket.getId(). split("-")[0];
-        sb.append("Ticket : ").append(ticketManualId). append("\n");
-        System.out.print(sb);
-        return newTicket;
+    public TicketFactory(TicketService ticketService, UserService userService) {
+        this.ticketService = ticketService;
+        this. userService = userService;
     }
 
-    public Ticket ticketNewEmpresa();
+    /**
+     * Crea un ticket determinando automáticamente el modo según el tipo de cliente
+     * - BASIC: Para clientes normales (solo productos)
+     * - DETAILED: Para clientes empresa (productos + servicios)
+     */
+    public Ticket createTicket(String cashierId, String clientId) {
+        // Verificar que el cliente existe
+        Client client = userService. findClientById(clientId);
 
-    @Override
-    public String generateId() {
-        String date = LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
-        int random = ThreadLocalRandom.current().nextInt(0, 100000);
-        return date + "-" + String.format("%05d", random);
+        // Determinar el modo según el tipo de cliente
+        TicketMode mode = (client instanceof CompanyClient)
+                ? TicketMode. DETAILED
+                : TicketMode.BASIC;
+
+        // Crear el ticket con el modo apropiado
+        return ticketService.createTicket(cashierId, clientId, mode);
+    }
+
+    /**
+     * Crea un ticket forzando un modo específico
+     * (útil para casos especiales)
+     */
+    public Ticket createTicketWithMode(String cashierId, String clientId, TicketMode mode) {
+        Client client = userService.findClientById(clientId);
+
+        // Validar que clientes normales no pueden tener tickets DETAILED
+        if (!(client instanceof CompanyClient) && mode == TicketMode. DETAILED) {
+            throw new DomainException(
+                    "DETAILED tickets (with services) are only allowed for company clients"
+            );
+        }
+
+        return ticketService.createTicket(cashierId, clientId, mode);
     }
 }

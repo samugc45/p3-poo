@@ -1,63 +1,57 @@
-package com.p3.p3POO.application.service.impl;
+package com.p3.p3POO.application. service.impl;
 
-import com.p3.p3POO.application.service.ServiceService;
+import com. p3.p3POO. application.service.ServiceService;
 import com.p3.p3POO.domain.model.enums.ServiceType;
-import com.p3.p3POO.domain.model.interfaces.IdGenerable;
-import com.p3.p3POO.domain.model.service.Service;
 import com.p3.p3POO.domain.repository.ServiceRepository;
+import com. p3.p3POO. infrastructure.exception.DomainException;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java. util.List;
 
+@org.springframework.stereotype.Service
+@Transactional
 public class ServiceServiceImpl implements ServiceService {
 
     private final ServiceRepository serviceRepository;
-    private final IdGenerable idGenerator;
 
-    public ServiceServiceImpl(ServiceRepository serviceRepository, IdGenerable idGenerator) {
-        this.serviceRepository = Objects.requireNonNull(serviceRepository, "serviceRepository");
-        this.idGenerator = Objects.requireNonNull(idGenerator, "idGenerator");
+    public ServiceServiceImpl(ServiceRepository serviceRepository) {
+        this.serviceRepository = serviceRepository;
     }
 
     @Override
-    public List<Service> getAllServices() {
+    public com.p3.p3POO.domain.model.service.Service createService(ServiceType serviceType, LocalDate maxUsageDate) {
+        long count = serviceRepository.countAll();
+        String id = com.p3.p3POO.domain.model.service.Service.generateId((int) count + 1);
+
+        com.p3.p3POO.domain.model.service.Service service =
+                new com.p3.p3POO.domain.model.service.Service(id, serviceType, maxUsageDate);
+
+        return serviceRepository.save(service);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public com.p3.p3POO.domain.model.service.Service findServiceById(String id) {
+        return serviceRepository.findById(id)
+                .orElseThrow(() -> new DomainException("Service not found: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<com. p3.p3POO. domain.model.service.Service> findAllServices() {
         return serviceRepository.findAll();
     }
 
     @Override
-    public Service getServiceById(String id) {
-        return serviceRepository.findById(id);
+    @Transactional(readOnly = true)
+    public List<com.p3.p3POO.domain.model.service.Service> findServicesByType(ServiceType type) {
+        return serviceRepository.findByServiceType(type);
     }
 
     @Override
-    public Service createService(Service service) {
-        Objects.requireNonNull(service, "service");
-
-        String id = idGenerator.generateId();
-
-        Service toSave = new Service(service.getServiceType());
-        toSave.setCalculatedPrice(service.getCalculatedPrice());
-
-        return serviceRepository.save(toSave);
-    }
-
-    @Override
-    public Service updateService(String id, Service service) {
-        Objects.requireNonNull(service, "service");
-        getServiceById(id); // asegura existencia
-
-        Service toSave = new Service(service.getServiceType());
-        toSave.setCalculatedPrice(service.getCalculatedPrice());
-
-        return serviceRepository.save(toSave);
-    }
-
-    @Override
-    public void deleteService(String id) {
-        serviceRepository.deleteById(id);
-    }
-
-    public List<Service> getServicesByType(ServiceType serviceType) {
-        return serviceRepository.findByServiceType(serviceType);
+    @Transactional(readOnly = true)
+    public boolean serviceExists(String id) {
+        return serviceRepository.existsById(id);
     }
 }
