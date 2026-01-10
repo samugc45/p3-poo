@@ -16,7 +16,7 @@ public abstract class User {
     @Column(nullable = false, length = 100)
     protected String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     protected String email;
 
     @Column(nullable = false)

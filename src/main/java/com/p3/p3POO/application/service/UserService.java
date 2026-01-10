@@ -9,10 +9,12 @@ import java.util.List;
 public interface UserService {
 
     // Cashier operations
-    Cashier createCashier(String name, String email);
+    Cashier createCashier(String id, String name, String email);
+    Cashier createCashierAutoId(String name, String email);
     Cashier findCashierById(String employeeCode);
     List<Cashier> findAllCashiers();
     boolean cashierExists(String employeeCode);
+    void deleteCashier(String employeeCode);
 
     // Client operations
     Client createClient(String dni, String name, String email, String cashierCode);

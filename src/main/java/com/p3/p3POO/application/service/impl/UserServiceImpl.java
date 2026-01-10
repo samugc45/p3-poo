@@ -23,11 +23,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Cashier createCashier(String name, String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new DomainException("Email already exists:  " + email);
+    public Cashier createCashier(String id, String name, String email) {
+        if (userRepository.existsById(id)) {
+            throw new DomainException("Cashier ID already exists: " + id);
         }
 
+        Cashier cashier = new Cashier(id, name, email);
+        return userRepository.save(cashier);
+    }
+
+    @Override
+    public Cashier createCashierAutoId(String name, String email) {
         String employeeCode = Cashier.generateEmployeeCode();
         while (userRepository.existsById(employeeCode)) {
             employeeCode = Cashier.generateEmployeeCode();
@@ -61,6 +67,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(employeeCode)
                 .map(user -> user instanceof Cashier)
                 .orElse(false);
+    }
+
+    @Override
+    public void deleteCashier(String employeeCode) {
+        Cashier cashier = findCashierById(employeeCode);
+        userRepository.deleteById(cashier.getId());
     }
 
     @Override

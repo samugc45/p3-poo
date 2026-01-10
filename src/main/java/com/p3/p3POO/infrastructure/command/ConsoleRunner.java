@@ -18,24 +18,32 @@ public class ConsoleRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("=". repeat(60));
-        System.out.println("        TICKET MANAGEMENT SYSTEM - p3POO");
-        System.out.println("=".repeat(60));
-        System.out. println("Type 'help' for available commands or 'exit' to quit");
-        System.out.println();
+        System.out.println("Welcome to the ticket module App.");
+        System.out.println("Ticket module.  Type 'help' to see commands.");
 
         while (true) {
-            System.out.print("> ");
+            System.out. print("tUPM> ");
             String input = scanner.nextLine();
 
-            if (input.trim().equalsIgnoreCase("exit") || input.trim().equalsIgnoreCase("quit")) {
+            if (input. trim().isEmpty()) {
+                continue;
+            }
+
+            String result = commandExecutor.execute(input);
+
+            // Si el resultado es "exit", salir
+            if ("exit".equals(result)) {
+                System.out.println("Closing application.");
                 System.out.println("Goodbye!");
                 break;
             }
 
-            String result = commandExecutor.execute(input);
-            System.out.println(result);
-            System.out.println();
+            // Mostrar resultado (si no está vacío)
+            if (!result.isEmpty()) {
+                System.out.println(result);
+            }
+
+            System.out.println(); // Línea en blanco después de cada comando
         }
 
         scanner.close();
