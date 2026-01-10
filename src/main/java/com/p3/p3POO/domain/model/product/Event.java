@@ -1,11 +1,10 @@
-package com.p3.p3POO.domain. model. product;
+package com.p3.p3POO.domain.model.product;
 
 import com.p3.p3POO.domain.model.enums.TCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data

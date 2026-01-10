@@ -1,4 +1,4 @@
-package com.p3.p3POO. application.factory;
+package com.p3.p3POO.application.factory;
 
 import com.p3.p3POO.application.service.TicketService;
 import com.p3.p3POO.application.service.UserService;

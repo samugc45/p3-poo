@@ -4,7 +4,7 @@ import com.p3.p3POO.domain.model.Ticket;
 import com.p3.p3POO.domain.model.TicketLine;
 import org.springframework.stereotype.Component;
 
-import java.time.format. DateTimeFormatter;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Estrategia de impresión DETALLADA

@@ -1,11 +1,11 @@
 package com.p3.p3POO.application.service.impl;
 
 import com.p3.p3POO.application.service.UserService;
-import com.p3.p3POO. domain.model.user.Cashier;
-import com.p3.p3POO.domain. model.user.Client;
-import com.p3.p3POO.domain.model.user. CompanyClient;
-import com.p3.p3POO. domain.repository.UserRepository;
-import com.p3.p3POO. infrastructure.exception.DomainException;
+import com.p3.p3POO.domain.model.user.Cashier;
+import com.p3.p3POO.domain.model.user.Client;
+import com.p3.p3POO.domain.model.user.CompanyClient;
+import com.p3.p3POO.domain.repository.UserRepository;
+import com.p3.p3POO.infrastructure.exception.DomainException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

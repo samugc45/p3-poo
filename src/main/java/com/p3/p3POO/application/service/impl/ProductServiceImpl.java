@@ -1,4 +1,4 @@
-package com.p3.p3POO.application. service.impl;
+package com.p3.p3POO.application.service.impl;
 
 import com. p3.p3POO.application.service.ProductService;
 import com.p3.p3POO.domain.model.enums.TCategory;

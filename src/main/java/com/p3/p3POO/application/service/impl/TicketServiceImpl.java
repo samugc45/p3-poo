@@ -5,7 +5,7 @@ import com.p3.p3POO.application.service.UserService;
 import com.p3.p3POO.application.service.ProductService;
 import com.p3.p3POO.application.service.ServiceService;
 import com.p3.p3POO.domain.model.Ticket;
-import com.p3.p3POO.domain.model. TicketLine;
+import com.p3.p3POO.domain.model.TicketLine;
 import com.p3.p3POO.domain.model.enums.TicketMode;
 import com.p3.p3POO.domain.model.enums.TicketState;
 import com.p3.p3POO.domain.model.product.Product;
@@ -13,7 +13,7 @@ import com.p3.p3POO.domain.model.user.Cashier;
 import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.repository.TicketRepository;
 import com.p3.p3POO.infrastructure.exception.DomainException;
-import org.springframework.transaction. annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

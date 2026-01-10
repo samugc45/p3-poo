@@ -1,6 +1,6 @@
 package com.p3.p3POO.domain.model. product;
 
-import com.p3.p3POO.domain. model.enums.TCategory;
+import com.p3.p3POO.domain.model.enums.TCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

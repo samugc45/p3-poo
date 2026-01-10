@@ -6,12 +6,12 @@ import com.p3.p3POO.application.strategy.BasicTicketPrintStrategy;
 import com.p3.p3POO.application.strategy.DetailedTicketPrintStrategy;
 import com.p3.p3POO.application.strategy.TicketPrintStrategy;
 import com.p3.p3POO.application.validator.EventValidator;
-import com. p3.p3POO. domain.model.Ticket;
-import com.p3.p3POO.domain. model.enums.TCategory;
+import com.p3.p3POO.domain.model.Ticket;
+import com.p3.p3POO.domain.model.enums.TCategory;
 import com.p3.p3POO.domain.model.enums.ServiceType;
-import com.p3.p3POO.domain. model.enums.TicketMode;
-import com.p3.p3POO.domain. model.product.*;
-import com.p3.p3POO.domain.model. user.Cashier;
+import com.p3.p3POO.domain.model.enums.TicketMode;
+import com.p3.p3POO.domain.model.product.*;
+import com.p3.p3POO.domain.model.user.Cashier;
 import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.model.user.CompanyClient;
 import com.p3.p3POO.infrastructure.exception.DomainException;
@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java. time.format.DateTimeFormatter;
-import java. util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Component
 public class CommandExecutor {

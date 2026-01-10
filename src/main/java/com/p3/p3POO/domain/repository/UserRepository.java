@@ -1,6 +1,6 @@
 package com.p3.p3POO.domain. repository;
 
-import com.p3.p3POO.domain. model.user.User;
+import com.p3.p3POO.domain.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
