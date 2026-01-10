@@ -1,6 +1,6 @@
 package com.p3.p3POO.application.strategy;
 
-import com.p3.p3POO.domain.model. Ticket;
+import com.p3.p3POO.domain.model.Ticket;
 
 /**
  * Patrón Strategy para la impresión de tickets

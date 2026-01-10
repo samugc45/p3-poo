@@ -1,7 +1,7 @@
 package com.p3.p3POO.application.service;
 
-import com.p3.p3POO.domain.model.user. Cashier;
-import com.p3.p3POO.domain. model.user.Client;
+import com.p3.p3POO.domain.model.user.Cashier;
+import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.model.user.CompanyClient;
 
 import java.util.List;

@@ -1,11 +1,11 @@
 package com.p3.p3POO.domain.repository;
 
-import com.p3.p3POO.domain.model. Ticket;
-import com.p3.p3POO.domain.model.enums. TicketState;
-import com.p3.p3POO.domain.model.user. Cashier;
+import com.p3.p3POO.domain.model.Ticket;
+import com.p3.p3POO.domain.model.enums.TicketState;
+import com.p3.p3POO.domain.model.user.Cashier;
 import com.p3.p3POO.domain.model.user.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework. stereotype.Repository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

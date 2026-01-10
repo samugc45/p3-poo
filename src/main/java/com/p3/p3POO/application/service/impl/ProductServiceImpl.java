@@ -1,10 +1,10 @@
 package com.p3.p3POO.application. service.impl;
 
-import com. p3.p3POO. application.service.ProductService;
+import com. p3.p3POO.application.service.ProductService;
 import com.p3.p3POO.domain.model.enums.TCategory;
 import com.p3.p3POO.domain.model.product.*;
 import com.p3.p3POO.domain.repository.ProductRepository;
-import com.p3.p3POO.infrastructure.exception. DomainException;
+import com.p3.p3POO.infrastructure.exception.DomainException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

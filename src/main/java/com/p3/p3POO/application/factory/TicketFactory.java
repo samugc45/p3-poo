@@ -1,13 +1,13 @@
 package com.p3.p3POO. application.factory;
 
-import com. p3.p3POO. application.service.TicketService;
+import com.p3.p3POO.application.service.TicketService;
 import com.p3.p3POO.application.service.UserService;
-import com. p3.p3POO. domain.model. Ticket;
-import com.p3.p3POO.domain. model.enums.TicketMode;
+import com.p3.p3POO.domain.model.Ticket;
+import com.p3.p3POO.domain.model.enums.TicketMode;
 import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.model.user.CompanyClient;
 import com.p3.p3POO.infrastructure.exception.DomainException;
-import org.springframework.stereotype. Component;
+import org.springframework.stereotype.Component;
 
 @Component
 public class TicketFactory {

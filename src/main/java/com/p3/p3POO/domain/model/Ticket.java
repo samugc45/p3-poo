@@ -2,7 +2,7 @@ package com.p3.p3POO.domain.model;
 
 import com.p3.p3POO.domain.model.enums.TicketMode;
 import com.p3.p3POO.domain.model.enums.TicketState;
-import com.p3.p3POO.domain.model.user. Cashier;
+import com.p3.p3POO.domain.model.user.Cashier;
 import com.p3.p3POO.domain.model.user.Client;
 import jakarta.persistence.*;
 import lombok.Data;

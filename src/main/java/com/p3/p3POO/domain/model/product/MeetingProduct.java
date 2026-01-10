@@ -2,11 +2,11 @@ package com.p3.p3POO.domain.model.product;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok. EqualsAndHashCode;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal. ChronoUnit;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,7 +26,6 @@ public class MeetingProduct extends Event {
         super(id, name, basePrice, eventDate, maxParticipants);
     }
 
-    // ✅ IMPLEMENTACIÓN OBLIGATORIA del método abstracto isValidForDate() heredado de Product
     @Override
     public boolean isValidForDate(LocalDate currentDate) {
         LocalDateTime now = currentDate.atStartOfDay();

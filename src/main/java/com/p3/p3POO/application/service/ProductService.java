@@ -5,7 +5,7 @@ import com.p3.p3POO.domain.model.enums.TCategory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java. util.List;
+import java.util.List;
 
 public interface ProductService {
 

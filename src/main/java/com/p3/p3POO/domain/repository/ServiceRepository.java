@@ -1,10 +1,10 @@
 package com.p3.p3POO.domain.repository;
 
 import com.p3.p3POO.domain.model.service.Service;
-import com.p3.p3POO.domain.model.enums. ServiceType;
-import org.springframework.data.jpa.repository. JpaRepository;
-import org. springframework.data.jpa.repository.Query;
-import org.springframework.stereotype. Repository;
+import com.p3.p3POO.domain.model.enums.ServiceType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;

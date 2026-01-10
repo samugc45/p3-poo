@@ -1,7 +1,7 @@
 package com.p3.p3POO.application.service;
 
-import com.p3.p3POO.domain.model. Ticket;
-import com.p3.p3POO.domain. model.enums.TicketMode;
+import com.p3.p3POO.domain.model.Ticket;
+import com.p3.p3POO.domain.model.enums.TicketMode;
 import com.p3.p3POO.domain.model.enums.TicketState;
 
 import java.util.List;

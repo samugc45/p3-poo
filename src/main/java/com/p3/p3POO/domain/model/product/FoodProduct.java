@@ -2,7 +2,7 @@ package com.p3.p3POO.domain.model.product;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok. EqualsAndHashCode;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,7 +31,6 @@ public class FoodProduct extends Event {
         this.expirationDate = expirationDate;
     }
 
-    // ✅ IMPLEMENTACIÓN OBLIGATORIA del método abstracto isValidForDate() heredado de Product
     @Override
     public boolean isValidForDate(LocalDate currentDate) {
         LocalDate eventDay = eventDate.toLocalDate();
@@ -43,7 +42,6 @@ public class FoodProduct extends Event {
         return daysBetween >= MIN_PLANNING_DAYS && notExpired;
     }
 
-    // Método estático auxiliar para validar al crear
     public static boolean canBeCreated(LocalDateTime eventDate, LocalDate expirationDate) {
         LocalDate now = LocalDate.now();
         LocalDate eventDay = eventDate.toLocalDate();

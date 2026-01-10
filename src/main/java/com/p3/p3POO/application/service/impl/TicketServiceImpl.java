@@ -1,6 +1,6 @@
 package com.p3.p3POO.application. service.impl;
 
-import com. p3.p3POO. application.service.TicketService;
+import com.p3.p3POO.application.service.TicketService;
 import com.p3.p3POO.application.service.UserService;
 import com.p3.p3POO.application.service.ProductService;
 import com.p3.p3POO.application.service.ServiceService;
