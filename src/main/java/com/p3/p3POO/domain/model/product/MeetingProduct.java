@@ -39,4 +39,5 @@ public class MeetingProduct extends Event {
         long hoursBetween = ChronoUnit.HOURS.between(now, eventDate);
         return hoursBetween >= MIN_PLANNING_HOURS;
     }
+
 }

@@ -75,23 +75,62 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(cashier.getId());
     }
 
-    @Override
-    public Client createClient(String dni, String name, String email, String cashierCode) {
-        if (!Client.isValidDNI(dni)) {
+    private void validateDni(String dni) {
+        // Validar formato:  DNI (8 dígitos + letra) o NIE (X/Y/Z + 7 dígitos + letra)
+        if (!dni.matches("^[0-9]{8}[A-Z]$") && !dni.matches("^[XYZ][0-9]{7}[A-Z]$")) {
             throw new DomainException("Invalid DNI format: " + dni);
         }
 
+        // Validar letra del DNI/NIE
+        String dniLetters = "TRWAGMYFPDXBNJZSQVHLCKE";
+        String numberPart = dni.substring(0, dni.length() - 1);
+
+        // Para NIE, convertir primera letra a número
+        if (numberPart.startsWith("X")) {
+            numberPart = "0" + numberPart.substring(1);
+        } else if (numberPart.startsWith("Y")) {
+            numberPart = "1" + numberPart. substring(1);
+        } else if (numberPart.startsWith("Z")) {
+            numberPart = "2" + numberPart.substring(1);
+        }
+
+        int dniNumber = Integer.parseInt(numberPart);
+        char expectedLetter = dniLetters.charAt(dniNumber % 23);
+        char providedLetter = dni.charAt(dni.length() - 1);
+
+        if (expectedLetter != providedLetter) {
+            throw new DomainException("Invalid DNI letter: " + dni);
+        }
+    }
+
+    @Override
+    public Client createClient(String dni, String name, String email, String cashierId) {
+        // Validar formato de DNI
+        validateDni(dni);
+
+        // Validar que no existe email duplicado
+        if (userRepository.existsByEmail(email)) {
+            throw new DomainException("Email already exists: " + email);
+        }
+
+        // Validar que no existe cliente con ese DNI
         if (userRepository.existsById(dni)) {
             throw new DomainException("Client already exists: " + dni);
         }
 
-        if (userRepository.existsByEmail(email)) {
-            throw new DomainException("Email already exists:  " + email);
-        }
+        // Buscar cajero
+        Cashier cashier = findCashierById(cashierId);
 
-        Cashier cashier = findCashierById(cashierCode);
+        // Crear cliente (sin validación en constructor)
         Client client = new Client(dni, name, email, cashier);
+
         return userRepository.save(client);
+    }
+
+    @Override
+    public void deleteClient(String dni) {
+        Client client = findClientById(dni);
+        userRepository.deleteById(client.getId());
     }
 
     @Override

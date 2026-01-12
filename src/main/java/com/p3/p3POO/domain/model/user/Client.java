@@ -2,6 +2,7 @@ package com.p3.p3POO.domain.model.user;
 
 import com.p3.p3POO.domain.model. Ticket;
 import com.p3.p3POO.domain.model.enums.ClientType;
+import com.p3.p3POO.infrastructure.exception.DomainException;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok. EqualsAndHashCode;
@@ -24,7 +25,7 @@ public class Client extends User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registered_by_cashier_id")
-    private Cashier registeredBy;
+    protected Cashier registeredBy;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType. ALL, orphanRemoval = true)
     private List<Ticket> tickets;
@@ -42,7 +43,7 @@ public class Client extends User {
         this.dni = dni;
         this.clientType = ClientType.NORMAL;
         this.registeredBy = registeredBy;
-        this. tickets = new ArrayList<>();
+        this.tickets = new ArrayList<>();
     }
 
     // Método para añadir ticket
@@ -51,16 +52,9 @@ public class Client extends User {
         ticket.setClient(this);
     }
 
-    // Validación DNI español (8 dígitos + letra)
-    public static boolean isValidDNI(String dni) {
-        if (dni == null || ! dni.matches("\\d{8}[A-Z]")) {
-            return false;
-        }
-
-        String letters = "TRWAGMYFPDXBNJZSQVHLCKE";
-        int number = Integer.parseInt(dni.substring(0, 8));
-        char letter = dni.charAt(8);
-
-        return letters.charAt(number % 23) == letter;
+    @Override
+    public String toString() {
+        return String.format("USER{identifier='%s', name='%s', email='%s', cash=%s}",
+                dni, name, email, registeredBy.getEmployeeCode());
     }
 }

@@ -9,14 +9,13 @@ import java.util.List;
 
 public interface ProductService {
 
-    // Basic product operations
     BasicProduct createBasicProduct(String id, String name, Double price,TCategory category);
-
-    // Meeting product operations
     MeetingProduct createMeetingProduct(String id, String name, Double price, LocalDateTime eventDate, Integer maxParticipants);
-
-    // Food product operations
     FoodProduct createFoodProduct(String id, String name, Double price, LocalDateTime eventDate, Integer maxParticipants, LocalDate expirationDate);
+    void deleteProduct(String id);
+    BasicProduct updateProduct(String id, String field, String value);
+    BasicProduct createProduct(BasicProduct product);
+    BasicProduct createBasicProduct(String name, TCategory category, double price);
 
     // General product operations
     Product findProductById(String id);

@@ -33,6 +33,89 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void deleteProduct(String id) {
+        if (! productRepository.existsById(id)) {
+            throw new DomainException("Product not found:  " + id);
+        }
+        productRepository.deleteById(id);
+    }
+
+    @Override
+    public BasicProduct updateProduct(String id, String field, String value) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new DomainException("Product not found:  " + id));
+
+        // Solo se pueden actualizar BasicProduct
+        if (!(product instanceof BasicProduct)) {
+            throw new DomainException("Only basic products can be updated");
+        }
+
+        BasicProduct basicProduct = (BasicProduct) product;
+
+        switch (field. toUpperCase()) {
+            case "NAME":
+                basicProduct.setName(value);
+                break;
+            case "CATEGORY":
+                try {
+                    TCategory category = TCategory.valueOf(value.toUpperCase());
+                    basicProduct.setCategory(category);
+                } catch (IllegalArgumentException e) {
+                    throw new DomainException("Invalid category: " + value);
+                }
+                break;
+            case "PRICE":
+                try {
+                    double price = Double. parseDouble(value);
+                    if (price <= 0) {
+                        throw new DomainException("Price must be positive");
+                    }
+                    basicProduct. setBasePrice(price);
+                } catch (NumberFormatException e) {
+                    throw new DomainException("Invalid price format: " + value);
+                }
+                break;
+            default:
+                throw new DomainException("Invalid field: " + field + ". Valid fields: NAME, CATEGORY, PRICE");
+        }
+
+        return productRepository.save(basicProduct);
+    }
+
+    @Override
+    public BasicProduct createProduct(BasicProduct product) {
+        if (productRepository.existsById(product. getId())) {
+            throw new DomainException("Product already exists: " + product.getId());
+        }
+        return productRepository. save(product);
+    }
+
+    @Override
+    public BasicProduct createBasicProduct(String name, TCategory category, double price) {
+        // Generar ID autoincrementado
+        String id = generateNextProductId();
+        BasicProduct product = new BasicProduct(id, name, price, category);
+        return productRepository.save(product);
+    }
+
+    private String generateNextProductId() {
+        // Buscar el primer ID numérico disponible empezando desde 0
+        List<Product> products = productRepository.findAll();
+
+        int id = 0;
+        while (true) {
+            String idStr = String.valueOf(id);
+            boolean exists = products.stream()
+                    .anyMatch(p -> p. getId().equals(idStr));
+
+            if (!exists) {
+                return idStr;
+            }
+            id++;
+        }
+    }
+
+    @Override
     public MeetingProduct createMeetingProduct(String id, String name, Double price, LocalDateTime eventDate, Integer maxParticipants) {
         if (productRepository.existsById(id)) {
             throw new DomainException("Product already exists:  " + id);
@@ -102,4 +185,5 @@ public class ProductServiceImpl implements ProductService {
     public void addCustomTextToProduct(Long customizableProductId, String text) {
         throw new UnsupportedOperationException("CustomizableProduct not implemented yet");
     }
+
 }

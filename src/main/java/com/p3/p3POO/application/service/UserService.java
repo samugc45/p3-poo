@@ -21,6 +21,7 @@ public interface UserService {
     Client findClientById(String dni);
     List<Client> findAllClients();
     boolean clientExists(String dni);
+    void deleteClient(String dni);
 
     // Company client operations
     CompanyClient createCompanyClient(String nif, String companyName, String email, String cashierCode);

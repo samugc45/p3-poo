@@ -37,4 +37,10 @@ public class CompanyClient extends Client {
         // Formato: A12345678 o 12345678A
         return nif.matches("[A-Z]\\d{8}") || nif.matches("\\d{8}[A-Z]");
     }
+
+    @Override
+    public String toString() {
+        return String.format("COMPANY{identifier='%s', name='%s', email='%s', cash=%s}",
+                nif, companyName, email, registeredBy.getEmployeeCode());
+    }
 }
