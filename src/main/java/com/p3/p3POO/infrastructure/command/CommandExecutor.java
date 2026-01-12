@@ -6,15 +6,18 @@ import com.p3.p3POO.application.strategy.BasicTicketPrintStrategy;
 import com.p3.p3POO.application. strategy.DetailedTicketPrintStrategy;
 import com.p3.p3POO.application.validator.EventValidator;
 import com.p3.p3POO.domain.model.Ticket;
+import com.p3.p3POO.domain.model.enums.ServiceType;
 import com.p3.p3POO.domain.model.enums.TCategory;
-import com.p3.p3POO.domain.model.product.BasicProduct;
-import com.p3.p3POO.domain.model.product.Product;
+import com.p3.p3POO.domain.model.product.*;
+import com.p3.p3POO.domain.model.service.Service;
 import com.p3.p3POO.domain.model.user.Cashier;
 import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.model.user.CompanyClient;
 import com.p3.p3POO.infrastructure.exception.DomainException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -338,7 +341,7 @@ public class CommandExecutor {
 
     private String executeProd(List<String> tokens) {
         if (tokens.size() < 2) {
-            return "Usage:  prod add|list|remove|update [args]";
+            return "Usage: prod add|addMeeting|addFood|list|remove|update [args]";
         }
 
         String subcommand = tokens.get(1).toLowerCase();
@@ -346,6 +349,10 @@ public class CommandExecutor {
         switch (subcommand) {
             case "add":
                 return executeProdAdd(tokens);
+            case "addmeeting":
+                return executeProdAddMeeting(tokens);
+            case "addfood":
+                return executeProdAddFood(tokens);
             case "list":
                 return executeProdList(tokens);
             case "remove":
@@ -358,113 +365,172 @@ public class CommandExecutor {
     }
 
     private String executeProdAdd(List<String> tokens) {
-        // Formato 1: prod add <id> "<name>" <category> <price>
-        // Formato 2: prod add "<name>" <category> <price>  (ID autogenerado)
-        // Formato 3: prod add "<name>" <category>  (sin precio, para casos especiales)
+        try {
+            // CASO 1: prod add <fecha> <SERVICIO>
+            // Ejemplo: prod add 2025-12-21 INSURANCE
+            if (tokens.size() == 4 && tokens.get(2).matches("\\d{4}-\\d{2}-\\d{2}")) {
+                return executeProdAddService(tokens);
+            }
+
+            // CASO 2: prod add <id> "<name>" <category> <price> <maxPersonalizations>
+            // Ejemplo: prod add 5 "Camiseta talla: M UPM" CLOTHES 15 3
+            if (tokens.size() == 7) {
+                String id = tokens.get(2);
+                String name = tokens.get(3);
+                String categoryStr = tokens.get(4);
+                double price = Double.parseDouble(tokens.get(5));
+                int maxPersonalizations = Integer.parseInt(tokens.get(6));
+
+                TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
+                ProductPersonalized product = productService.createPersonalizedProduct(id, name, price, category, maxPersonalizations);
+                return product.toString() + "\nprod add:  ok";
+            }
+
+            // CASO 3: prod add <id> "<name>" <category> <price>
+            if (tokens.size() == 6) {
+                String id = tokens.get(2);
+                String name = tokens.get(3);
+                String categoryStr = tokens. get(4);
+                double price = Double.parseDouble(tokens. get(5));
+
+                TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
+                BasicProduct product = productService.createBasicProduct(id, name, price, category);
+                return product. toString() + "\nprod add: ok";
+            }
+
+            // CASO 4: prod add "<name>" <category> <price>
+            if (tokens.size() == 5) {
+                String name = tokens.get(2);
+                String categoryStr = tokens. get(3);
+                double price = Double.parseDouble(tokens. get(4));
+
+                TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
+                String id = "0"; // ID por defecto
+                BasicProduct product = productService.createBasicProduct(id, name, price, category);
+                return product. toString() + "\nprod add: ok";
+            }
+
+            return "Usage: prod add [<id>] \"<name>\" <category> <price> [<maxPersonalizations>]";
+
+        } catch (IllegalArgumentException e) {
+            return "Error: Invalid category or format";
+        } catch (Exception e) {
+            return "Error: " + e. getMessage();
+        }
+    }
+
+    private String executeProdAddService(List<String> tokens) {
+        // Formato: prod add <fecha> <SERVICIO>
+        // Ejemplo: prod add 2025-12-21 INSURANCE
 
         try {
-            String id = null;
-            String name;
-            String categoryStr;
-            Double price = null;
+            String dateStr = tokens.get(2);
+            String serviceTypeStr = tokens.get(3);
 
-            if (tokens.size() >= 6) {
-                // Formato 1: con ID
-                if (CommandParser.isNumeric(tokens.get(2))) {
-                    id = tokens.get(2);
-                    name = tokens.get(3);
-                    categoryStr = tokens.get(4);
-                    if (tokens.size() >= 6) {
-                        price = Double.parseDouble(tokens.get(5));
-                    }
-                } else {
-                    // Formato 2: sin ID
-                    name = tokens.get(2);
-                    categoryStr = tokens.get(3);
-                    price = Double.parseDouble(tokens.get(4));
-                }
-            } else if (tokens.size() == 5) {
-                // Podría ser:  prod add <id> "<name>" <category> (sin precio)
-                // O: prod add "<name>" <category> <price>
-                if (CommandParser.isNumeric(tokens.get(2))) {
-                    // Con ID, sin precio
-                    id = tokens.get(2);
-                    name = tokens.get(3);
-                    categoryStr = tokens.get(4);
-                } else {
-                    // Sin ID, con precio
-                    name = tokens.get(2);
-                    categoryStr = tokens.get(3);
-                    price = Double.parseDouble(tokens.get(4));
-                }
-            } else if (tokens.size() == 4) {
-                // prod add "<name>" <category>
-                name = tokens.get(2);
-                categoryStr = tokens.get(3);
-            } else {
-                return "Usage: prod add [<id>] \"<name>\" <category> [<price>]";
-            }
+            LocalDate maxUsageDate = LocalDate.parse(dateStr);
+            ServiceType serviceType = ServiceType.valueOf(serviceTypeStr.toUpperCase());
 
-            // Convertir categoría
-            TCategory category;
-            try {
-                category = TCategory.valueOf(categoryStr.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return "Error: Invalid category: " + categoryStr;
-            }
+            Service service = serviceService.createService(serviceType, maxUsageDate);
+            return service.toString() + "\nprod add: ok";
 
-            // Crear producto
-            BasicProduct product;
-
-            if (id != null) {
-                // Con ID específico
-                if (price == null) {
-                    price = 0.0; // Precio por defecto
-                }
-                product = new BasicProduct(id, name, price, category);
-                product = productService.createProduct(product);
-            } else {
-                // ID autogenerado
-                if (price == null) {
-                    price = 0.0;
-                }
-                product = productService.createBasicProduct(name, category, price);
-            }
-
-            return product.toString() + "\nprod add: ok";
-
-        } catch (NumberFormatException e) {
-            return "Error: Invalid price format";
+        } catch (IllegalArgumentException e) {
+            return "Error: Invalid service type";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
     }
 
+    private String executeProdAddMeeting(List<String> tokens) {
+        // Formato: prod addMeeting <id> "<name>" <price> <date> <maxPeople>
+        // Ejemplo: prod addMeeting 23456 "Reunion Rotonda" 12 2025-12-21 100
+
+        try {
+            if (tokens.size() < 7) {
+                return "Usage:  prod addMeeting <id> \"<name>\" <price> <date: yyyy-MM-dd> <maxPeople>";
+            }
+
+            String id = tokens.get(2);
+            String name = tokens.get(3);
+            double price = Double.parseDouble(tokens.get(4));
+            String dateStr = tokens.get(5);
+            int maxPeople = Integer.parseInt(tokens.get(6));
+
+            // Parsear fecha con hora de mediodía para evitar problemas de validación
+            LocalDate eventDateLocal = LocalDate.parse(dateStr);
+            LocalDateTime eventDate = eventDateLocal.atTime(12, 0); // 12:00 PM
+
+            MeetingProduct meeting = productService.createMeetingProduct(id, name, price, eventDate, maxPeople);
+            return meeting.toString() + "\nprod addMeeting:  ok";
+
+        } catch (DomainException e) {
+            return "Error: " + e.getMessage();
+        } catch (Exception e) {
+            return "Error processing ->prod addMeeting ->Error adding product";
+        }
+    }
+
+    private String executeProdAddFood(List<String> tokens) {
+        // Formato: prod addFood <id> "<name>" <price> <date> <maxPeople>
+        // Ejemplo: prod addFood 23459 "Restaurante Asador" 50 2025-12-21 40
+
+        try {
+            if (tokens.size() < 7) {
+                return "Usage:  prod addFood <id> \"<name>\" <price> <date:yyyy-MM-dd> <maxPeople>";
+            }
+
+            String id = tokens. get(2);
+            String name = tokens.get(3);
+            double price = Double.parseDouble(tokens.get(4));
+            String dateStr = tokens.get(5);
+            int maxPeople = Integer.parseInt(tokens. get(6));
+
+            // Parsear fecha con hora de mediodía
+            LocalDate eventDateLocal = LocalDate.parse(dateStr);
+            LocalDateTime eventDate = eventDateLocal.atTime(12, 0); // 12:00 PM
+
+            // Fecha de caducidad = fecha del evento
+            LocalDate expirationDate = eventDateLocal;
+
+            FoodProduct food = productService.createFoodProduct(id, name, price, eventDate, maxPeople, expirationDate);
+            return food.toString() + "\nprod addFood: ok";
+
+        } catch (DomainException e) {
+            return "Error: " + e.getMessage();
+        } catch (Exception e) {
+            return "Error processing ->prod addFood ->Error adding product";
+        }
+    }
+
     private String executeProdList(List<String> tokens) {
         List<Product> products = productService.findAllProducts();
+        List<Service> services = serviceService.findAllServices();
 
-        if (products.isEmpty()) {
+        if (products.isEmpty() && services.isEmpty()) {
             return "Catalog:\nprod list: ok";
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append("Catalog:\n");
 
-        // Ordenar por ID
+        // Ordenar productos por ID
         products.sort((p1, p2) -> {
-            // Intentar ordenar numéricamente si son números
             try {
                 int id1 = Integer.parseInt(p1.getId());
                 int id2 = Integer.parseInt(p2.getId());
                 return Integer.compare(id1, id2);
             } catch (NumberFormatException e) {
-                // Si no son números, ordenar alfabéticamente
                 return p1.getId().compareTo(p2.getId());
             }
         });
 
-        for (Product product :  products) {
+        // Añadir productos
+        for (Product product : products) {
             sb.append("  ").append(product.toString()).append("\n");
+        }
+
+        // Añadir servicios
+        for (Service service : services) {
+            sb.append("  ").append(service.toString()).append("\n");
         }
 
         sb.append("prod list: ok");
@@ -472,7 +538,6 @@ public class CommandExecutor {
     }
 
     private String executeProdRemove(List<String> tokens) {
-        // Formato: prod remove <id>
         if (tokens.size() < 3) {
             return "Usage:  prod remove <id>";
         }
@@ -480,7 +545,6 @@ public class CommandExecutor {
         String id = tokens.get(2);
 
         try {
-            // Obtener producto antes de eliminar para mostrar info
             Product product = productService.findProductById(id);
             productService.deleteProduct(id);
             return product.toString() + "\nprod remove: ok";
@@ -490,7 +554,6 @@ public class CommandExecutor {
     }
 
     private String executeProdUpdate(List<String> tokens) {
-        // Formato: prod update <id> NAME|CATEGORY|PRICE <value>
         if (tokens.size() < 5) {
             return "Usage:  prod update <id> NAME|CATEGORY|PRICE <value>";
         }

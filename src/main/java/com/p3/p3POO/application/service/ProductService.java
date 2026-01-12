@@ -26,4 +26,7 @@ public interface ProductService {
     // Customizable products
     CustomizableProduct createCustomizableProduct(String baseProductId, Integer maxCustomTexts);
     void addCustomTextToProduct(Long customizableProductId, String text);
+
+    // Personalized products
+    ProductPersonalized createPersonalizedProduct(String id, String name, Double price, TCategory category, Integer maxPersonalizations);
 }

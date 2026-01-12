@@ -2,6 +2,7 @@ package com.p3.p3POO.application.service.impl;
 
 import com.p3.p3POO.application.service.ServiceService;
 import com.p3.p3POO.domain.model.enums.ServiceType;
+import com.p3.p3POO.domain.model.service.Service;
 import com.p3.p3POO.domain.repository.ServiceRepository;
 import com.p3.p3POO.infrastructure.exception.DomainException;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +21,30 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public com.p3.p3POO.domain.model.service.Service createService(ServiceType serviceType, LocalDate maxUsageDate) {
-        long count = serviceRepository.countAll();
-        String id = com.p3.p3POO.domain.model.service.Service.generateId((int) count + 1);
-
-        com.p3.p3POO.domain.model.service.Service service =
-                new com.p3.p3POO.domain.model.service.Service(id, serviceType, maxUsageDate);
-
+    public Service createService(ServiceType serviceType, LocalDate maxUsageDate) {
+        String id = generateNextServiceId();
+        Service service = new Service(id, serviceType, maxUsageDate);
         return serviceRepository.save(service);
+    }
+
+    private String generateNextServiceId() {
+        List<Service> services = serviceRepository.findAll();
+        int maxId = 0;
+
+        for (Service s : services) {
+            try {
+                // ID formato: 1S, 2S, 3S...
+                String idStr = s.getId().replace("S", "");
+                int currentId = Integer.parseInt(idStr);
+                if (currentId > maxId) {
+                    maxId = currentId;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar IDs no numéricos
+            }
+        }
+
+        return (maxId + 1) + "S";
     }
 
     @Override

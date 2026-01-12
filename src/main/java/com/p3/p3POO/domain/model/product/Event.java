@@ -49,7 +49,4 @@ public abstract class Event extends Product {
     public void setCategory(TCategory category) {
         throw new UnsupportedOperationException("Events cannot have a category");
     }
-
-    // ⚠️ isValidForDate() NO se implementa aquí (sigue siendo abstracto)
-    // Las clases hijas (MeetingProduct, FoodProduct) DEBEN implementarlo
 }

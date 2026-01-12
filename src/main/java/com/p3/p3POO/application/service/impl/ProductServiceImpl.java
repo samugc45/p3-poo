@@ -182,6 +182,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductPersonalized createPersonalizedProduct(String id, String name, Double price, TCategory category, Integer maxPersonalizations) {
+        if (productRepository.existsById(id)) {
+            throw new DomainException("Product already exists:  " + id);
+        }
+
+        ProductPersonalized product = new ProductPersonalized(id, name, price, category, maxPersonalizations);
+        return productRepository.save(product);
+    }
+
+    @Override
     public void addCustomTextToProduct(Long customizableProductId, String text) {
         throw new UnsupportedOperationException("CustomizableProduct not implemented yet");
     }

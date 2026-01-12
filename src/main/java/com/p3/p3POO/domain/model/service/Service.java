@@ -43,4 +43,13 @@ public class Service {
     public static String generateId(int sequenceNumber) {
         return sequenceNumber + "S";
     }
+
+    @Override
+    public String toString() {
+        // Formato: {class:ProductService, id:1, category:INSURANCE, expiration:Sun Dec 21 00:00:00 CET 2025}
+        java.time.ZonedDateTime zdt = maxUsageDate.atStartOfDay(java.time.ZoneId.of("CET"));
+        java.util.Date date = java.util.Date.from(zdt.toInstant());
+        return String.format("{class:ProductService, id:%s, category:%s, expiration:%s}",
+                id, serviceType, date);
+    }
 }

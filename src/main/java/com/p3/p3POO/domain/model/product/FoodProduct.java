@@ -51,4 +51,11 @@ public class FoodProduct extends Event {
 
         return daysBetween >= MIN_PLANNING_DAYS && notExpired;
     }
+
+    @Override
+    public String toString() {
+        return String.format(java. util.Locale.US,
+                "{class:Food, id:%s, name:'%s', price:%.1f, date of Event:%s, max people allowed:%d}",
+                id, name, basePrice, eventDate.toLocalDate(), maxParticipants);
+    }
 }
