@@ -36,7 +36,7 @@ public class Ticket {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<TicketLine> ticketLines;
 
     @Column(nullable = false)
@@ -128,11 +128,11 @@ public class Ticket {
         this.id = this.id + "-" + closeDate.format(formatter);
     }
 
-    // Generador de ID de ticket:  YY-MM-dd-HH:mm-XXXXX
     public static String generateId() {
-        DateTimeFormatter formatter = DateTimeFormatter. ofPattern("yy-MM-dd-HH:mm");
-        String datePart = LocalDateTime.now().format(formatter);
-        int randomNumber = (int) (Math.random() * 100000);
-        return String.format("%s-%05d", datePart, randomNumber);
+        // Formato: TK + timestamp + random
+        LocalDateTime now = LocalDateTime.now();
+        String timestamp = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        int random = (int) (Math.random() * 10000);
+        return "TK" + timestamp + String.format("%04d", random);
     }
 }

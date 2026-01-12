@@ -5,86 +5,67 @@ import com.p3.p3POO.domain.model.TicketLine;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-/**
- * Estrategia de impresión DETALLADA
- * Para tickets de empresa (productos + servicios)
- */
 @Component
 public class DetailedTicketPrintStrategy implements TicketPrintStrategy {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     public String print(Ticket ticket) {
         StringBuilder sb = new StringBuilder();
+        sb.append("========== DETAILED TICKET ==========\n");
+        sb.append("ID: ").append(ticket.getId()).append("\n");
+        sb.append("Client: ").append(ticket.getClient().getName())
+                .append(" (").append(ticket.getClient().getId()).append(")\n");
+        sb.append("Cashier: ").append(ticket.getCashier().getName())
+                .append(" (").append(ticket.getCashier().getId()).append(")\n");
 
-        // Encabezado
-        sb.append("=".repeat(60)).append("\n");
-        sb.append("             TICKET EMPRESA - DETALLADO\n");
-        sb.append("=".repeat(60)).append("\n");
-        sb.append(String.format("ID: %s\n", ticket.getId()));
-        sb.append(String.format("Estado: %s\n", ticket.getState()));
-        sb.append(String.format("Modo: %s\n", ticket. getMode()));
-        sb.append(String.format("Fecha apertura: %s\n", ticket.getOpenDate().format(DATE_FORMATTER)));
-        if (ticket.getCloseDate() != null) {
-            sb.append(String.format("Fecha cierre: %s\n", ticket.getCloseDate().format(DATE_FORMATTER)));
-        }
-        sb.append("-".repeat(60)).append("\n");
+        // Formatear fecha
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        sb.append("Date: ").append(ticket.getOpenDate().format(formatter)).append("\n");
+        sb.append("Mode: ").append(ticket.getMode()).append("\n");
 
-        // Cliente empresa
-        sb.append("CLIENTE EMPRESA:\n");
-        sb.append(String.format("  Nombre: %s\n", ticket.getClient().getName()));
-        sb.append(String.format("  NIF: %s\n", ticket.getClient().getId()));
-        sb.append(String.format("  Email: %s\n", ticket. getClient().getEmail()));
+        sb.append("=====================================\n");
+        sb.append("PRODUCTS:\n");
 
-        // Cajero
-        sb.append(String.format("Cajero: %s (%s)\n",
-                ticket. getCashier().getName(),
-                ticket.getCashier().getEmployeeCode()));
+        int lineNum = 1;
+        double productsTotal = 0.0;
 
-        sb.append("-".repeat(60)).append("\n");
-
-        // Sección de PRODUCTOS
-        sb.append("PRODUCTOS:\n");
-        boolean hasProducts = false;
-        for (TicketLine line : ticket. getTicketLines()) {
+        for (TicketLine line : ticket.getTicketLines()) {
             if (line.isProduct()) {
-                hasProducts = true;
-                sb. append(String.format("  %-40s x%d  %10.2f€\n",
-                        line.getItemName(),
-                        line.getQuantity(),
-                        line.getTotalPrice()));
+                String formattedPrice = String.format(Locale.US, "%. 2f", line.getTotalPrice());
+                sb.append(lineNum).append(". ")
+                        .append(line.getProduct().getName())
+                        .append(" x").append(line.getQuantity())
+                        .append(" - ").append(formattedPrice).append("€\n");
+                lineNum++;
+                productsTotal += line.getTotalPrice();
             }
         }
-        if (!hasProducts) {
-            sb.append("  (ninguno)\n");
-        }
 
-        sb.append("\n");
+        sb.append("-------------------------------------\n");
+        String formattedSubtotal = String.format(Locale.US, "%.2f", productsTotal);
+        sb.append("Products Subtotal: ").append(formattedSubtotal).append("€\n");
 
-        // Sección de SERVICIOS
-        sb.append("SERVICIOS CONTRATADOS:\n");
-        boolean hasServices = false;
+        sb.append("=====================================\n");
+        sb.append("SERVICES:\n");
+
+        int serviceNum = 1;
         for (TicketLine line : ticket.getTicketLines()) {
             if (line.isService()) {
-                hasServices = true;
-                sb.append(String. format("  %-40s x%d  (facturación posterior)\n",
-                        line. getItemName(),
-                        line.getQuantity()));
+                sb.append(serviceNum).append(". Service ")
+                        .append(line. getService().getId())
+                        .append(" (").append(line.getService().getServiceType()).append(")")
+                        .append(" x").append(line.getQuantity()).append("\n");
+                serviceNum++;
             }
         }
-        if (! hasServices) {
-            sb.append("  (ninguno)\n");
-        }
 
-        sb.append("-".repeat(60)).append("\n");
+        sb.append("=====================================\n");
+        String formattedTotal = String.format(Locale.US, "%. 2f", ticket.calculateTotal());
+        sb.append("TOTAL: ").append(formattedTotal).append("€\n");
+        sb.append("=====================================");
 
-        // Total (solo productos)
-        sb.append(String.format("SUBTOTAL PRODUCTOS: %.2f€\n", ticket.calculateTotal()));
-        sb.append("SERVICIOS: A facturar\n");
-        sb.append("=".repeat(60)).append("\n");
-
-        return sb. toString();
+        return sb.toString();
     }
 }

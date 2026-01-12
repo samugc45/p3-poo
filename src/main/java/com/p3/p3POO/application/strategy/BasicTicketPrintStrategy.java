@@ -5,60 +5,45 @@ import com.p3.p3POO.domain.model.TicketLine;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-/**
- * Estrategia de impresión BÁSICA
- * Para tickets normales (solo productos)
- */
 @Component
 public class BasicTicketPrintStrategy implements TicketPrintStrategy {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     public String print(Ticket ticket) {
         StringBuilder sb = new StringBuilder();
+        sb.append("========== TICKET ==========\n");
+        sb.append("ID: ").append(ticket.getId()).append("\n");
+        sb.append("Client: ").append(ticket.getClient().getName()).append("\n");
+        sb.append("Cashier: ").append(ticket.getCashier().getName()).append("\n");
 
-        // Encabezado
-        sb.append("=". repeat(50)).append("\n");
-        sb.append("                 TICKET\n");
-        sb.append("=".repeat(50)).append("\n");
-        sb.append(String.format("ID: %s\n", ticket. getId()));
-        sb.append(String.format("Estado: %s\n", ticket.getState()));
-        sb.append(String. format("Fecha apertura: %s\n", ticket.getOpenDate().format(DATE_FORMATTER)));
-        if (ticket.getCloseDate() != null) {
-            sb.append(String.format("Fecha cierre: %s\n", ticket.getCloseDate().format(DATE_FORMATTER)));
-        }
-        sb. append("-".repeat(50)).append("\n");
+        // Formatear fecha
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        sb.append("Date: ").append(ticket.getOpenDate().format(formatter)).append("\n");
 
-        // Cliente
-        sb.append(String.format("Cliente: %s (%s)\n",
-                ticket.getClient().getName(),
-                ticket.getClient().getId()));
+        sb.append("============================\n");
 
-        // Cajero
-        sb.append(String.format("Cajero: %s (%s)\n",
-                ticket.getCashier().getName(),
-                ticket.getCashier().getEmployeeCode()));
-
-        sb.append("-".repeat(50)).append("\n");
-
-        // Líneas de productos
-        sb.append("PRODUCTOS:\n");
-        for (TicketLine line : ticket. getTicketLines()) {
+        int lineNum = 1;
+        for (TicketLine line :  ticket.getTicketLines()) {
             if (line.isProduct()) {
-                sb.append(String.format("  %-30s x%d  %8. 2f€\n",
-                        line.getItemName(),
-                        line.getQuantity(),
-                        line.getTotalPrice()));
+                // Formatear línea por línea sin el símbolo € dentro del format
+                String formattedPrice = String.format(Locale. US, "%.2f", line.getTotalPrice());
+                sb.append(lineNum).append(". ")
+                        .append(line.getProduct().getName())
+                        .append(" x").append(line.getQuantity())
+                        .append(" - ").append(formattedPrice).append("€\n");
+                lineNum++;
             }
         }
 
-        sb.append("-".repeat(50)).append("\n");
+        sb.append("============================\n");
 
-        // Total
-        sb.append(String. format("TOTAL: %. 2f€\n", ticket. calculateTotal()));
-        sb.append("=".repeat(50)).append("\n");
+        // Formatear total
+        String formattedTotal = String.format(Locale.US, "%.2f", ticket.calculateTotal());
+        sb.append("TOTAL:  ").append(formattedTotal).append("€\n");
+
+        sb.append("============================");
 
         return sb.toString();
     }

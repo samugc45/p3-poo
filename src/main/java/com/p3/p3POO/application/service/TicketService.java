@@ -18,6 +18,12 @@ public interface TicketService {
     void addProductToTicket(String ticketId, String productId, Integer quantity);
     void addServiceToTicket(String ticketId, String serviceId, Integer quantity);
 
+    void removeLineFromTicket(String ticketId, int lineNumber);
+
+
     Ticket closeTicket(String ticketId);
     Double calculateTicketTotal(String ticketId);
+
+    String printTicket(String ticketId);
+
 }

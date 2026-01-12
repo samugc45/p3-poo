@@ -4,6 +4,8 @@ import com.p3.p3POO.application.service.TicketService;
 import com.p3.p3POO.application.service.UserService;
 import com.p3.p3POO.application.service.ProductService;
 import com.p3.p3POO.application.service.ServiceService;
+import com.p3.p3POO.application.strategy.BasicTicketPrintStrategy;
+import com.p3.p3POO.application.strategy.DetailedTicketPrintStrategy;
 import com.p3.p3POO.domain.model.Ticket;
 import com.p3.p3POO.domain.model.TicketLine;
 import com.p3.p3POO.domain.model.enums.TicketMode;
@@ -26,11 +28,16 @@ public class TicketServiceImpl implements TicketService {
     private final ProductService productService;
     private final ServiceService serviceService;
 
-    public TicketServiceImpl(TicketRepository ticketRepository,UserService userService, ProductService productService, ServiceService serviceService) {
+    private final BasicTicketPrintStrategy basicPrintStrategy;
+    private final DetailedTicketPrintStrategy detailedPrintStrategy;
+
+    public TicketServiceImpl(TicketRepository ticketRepository,UserService userService,ProductService productService,ServiceService serviceService,BasicTicketPrintStrategy basicPrintStrategy, DetailedTicketPrintStrategy detailedPrintStrategy) {
         this.ticketRepository = ticketRepository;
         this.userService = userService;
         this.productService = productService;
         this.serviceService = serviceService;
+        this.basicPrintStrategy = basicPrintStrategy;
+        this.detailedPrintStrategy = detailedPrintStrategy;
     }
 
     @Override
@@ -114,6 +121,39 @@ public class TicketServiceImpl implements TicketService {
         ticket.addLine(line);
 
         ticketRepository.save(ticket);
+    }
+
+    @Override
+    public void removeLineFromTicket(String ticketId, int lineNumber) {
+        Ticket ticket = findTicketById(ticketId);
+
+        if (ticket. getState() == TicketState.CLOSE) {
+            throw new DomainException("Cannot remove lines from a closed ticket");
+        }
+
+        List<TicketLine> lines = ticket.getTicketLines();
+
+        // lineNumber empieza en 1 (no en 0)
+        if (lineNumber < 1 || lineNumber > lines. size()) {
+            throw new DomainException("Invalid line number:  " + lineNumber);
+        }
+
+        TicketLine lineToRemove = lines.get(lineNumber - 1);
+        ticket.removeLine(lineToRemove);
+
+        ticketRepository.save(ticket);
+    }
+
+    @Override
+    public String printTicket(String ticketId) {
+        Ticket ticket = findTicketById(ticketId);
+
+        // Elegir estrategia según el modo del ticket
+        if (ticket.getMode() == TicketMode.BASIC) {
+            return basicPrintStrategy.print(ticket);
+        } else {
+            return detailedPrintStrategy.print(ticket);
+        }
     }
 
     @Override
