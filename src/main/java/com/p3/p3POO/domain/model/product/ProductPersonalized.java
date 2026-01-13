@@ -60,12 +60,24 @@ public class ProductPersonalized extends Product {
     public String toString() {
         if (personalizationList == null || personalizationList.isEmpty()) {
             return String.format(java.util.Locale.US,
-                    "{class:  ProductPersonalized, id:%s, name:'%s', category:%s, price:  %.1f, maxPersonal:%d}",
+                    "{class:ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d}",
                     id, name, category, basePrice, maxPersonalizations);
         } else {
-            return String.format(java.util.Locale. US,
-                    "{class: ProductPersonalized, id:%s, name:'%s', category:%s, price: %.1f, maxPersonal:%d, personalizationList:%s}",
+            return String.format(java.util.Locale.US,
+                    "{class:ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}",
                     id, name, category, basePrice, maxPersonalizations, personalizationList);
         }
+    }
+
+    public String toStringWithPersonalizations(List<String> personalizations) {
+        if (personalizations == null || personalizations.isEmpty()) {
+            return toString();
+        }
+        // Calcula precio con personalizaciones
+        double surcharge = personalizations.size() * basePrice * 0.10;
+        double priceWithPersonalizations = basePrice + surcharge;
+        return String.format(java.util.Locale.US,
+                "{class: ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}",
+                id, name, category, priceWithPersonalizations, maxPersonalizations, personalizations);
     }
 }

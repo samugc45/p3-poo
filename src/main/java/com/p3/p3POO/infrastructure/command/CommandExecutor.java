@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -228,19 +229,20 @@ public class CommandExecutor {
         String cashierId = tokens.get(2);
 
         try {
-            List<Ticket> tickets = ticketService.findTicketsByCashier(cashierId);
+            List<Ticket> tickets = ticketService. findTicketsByCashier(cashierId);
 
             if (tickets.isEmpty()) {
-                return "Tickets:  \ncash tickets: ok";
+                return "Tickets:  \ncash tickets:  ok";
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append("Tickets:  \n");
+            sb.append("Tickets: \n");
 
             for (Ticket ticket : tickets) {
-                sb.append("  ").append(ticket.getId())
-                  .append("->").append(ticket.getState())
-                  .append("\n");
+                String idToShow = ticket.getDisplayId();
+                sb.append("  ").append(idToShow)
+                        .append("->").append(ticket.getState())
+                        .append("\n");
             }
 
             sb.append("cash tickets: ok");
@@ -602,56 +604,103 @@ public class CommandExecutor {
 
     private String executeTicketNew(List<String> tokens) {
         // Formato 1: ticket new <cashId> <clientId>
-        // Formato 2: ticket new <cashId> <clientId> BASIC|DETAILED
+        // Formato 2: ticket new <id> <cashId> <clientId>
+        // Formato 3: ticket new <id> <cashId> <clientId> -[c|p|s]
 
         try {
-            if (tokens.size() < 4) {
-                return "Usage:  ticket new <cashId> <clientId> [BASIC|DETAILED]";
+            String ticketId = null;
+            String cashId;
+            String clientId;
+            TicketMode mode = TicketMode.BASIC; // Default:  -p (solo productos)
+
+            if (tokens.size() >= 6) {
+                // Formato 3: con ID y opción
+                ticketId = tokens.get(2);
+                cashId = tokens. get(3);
+                clientId = tokens.get(4);
+                String option = tokens.get(5);
+
+                // Parsear opción -c, -p, -s
+                if (option. equals("-c")) {
+                    mode = TicketMode.DETAILED; // Combinado (productos + servicios)
+                } else if (option.equals("-p")) {
+                    mode = TicketMode.BASIC; // Solo productos
+                } else if (option.equals("-s")) {
+                    mode = TicketMode. DETAILED; // Solo servicios (usa DETAILED)
+                }
+            } else if (tokens.size() >= 5) {
+                // Formato 2: con ID
+                ticketId = tokens.get(2);
+                cashId = tokens.get(3);
+                clientId = tokens.get(4);
+            } else if (tokens.size() >= 4) {
+                // Formato 1: sin ID (autogenerado)
+                cashId = tokens.get(2);
+                clientId = tokens.get(3);
+            } else {
+                return "Usage: ticket new [<id>] <cashId> <userId> -[c|p|s] (default -p option)";
             }
 
-            String cashId = tokens.get(2);
-            String clientId = tokens.get(3);
-            TicketMode mode = TicketMode.BASIC; // Por defecto
+            Ticket ticket;
 
-            if (tokens.size() >= 5) {
-                String modeStr = tokens.get(4).toUpperCase();
-                mode = TicketMode.valueOf(modeStr);
+            if (ticketId != null) {
+                // Crear con ID específico
+                ticket = ticketService.createTicketWithId(ticketId, cashId, clientId, mode);
+            } else {
+                // Crear con ID autogenerado
+                ticket = ticketService.createTicket(cashId, clientId, mode);
             }
 
-            Ticket ticket = ticketService.createTicket(cashId, clientId, mode);
+            return ticket.formatForDisplay() + "\nticket new:  ok";
 
-            return String.format("Ticket{id='%s', state=%s, mode=%s}\nticket new:  ok",
-                    ticket.getId(), ticket.getState(), ticket.getMode());
-
-        } catch (IllegalArgumentException e) {
-            return "Error: Invalid ticket mode. Use BASIC or DETAILED";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
     }
 
     private String executeTicketAdd(List<String> tokens) {
-        // Formato: ticket add <ticketId> <productId|serviceId> <quantity>
+        // Formato:  ticket add <ticketId> <cashId> <productId|serviceId> <quantity> [--p<txt> --p<txt>]
 
         try {
             if (tokens.size() < 5) {
-                return "Usage:  ticket add <ticketId> <productId|serviceId> <quantity>";
+                return "Usage:  ticket add <ticketId> <cashId> <prodId> <amount> [--p<txt> --p<txt>]";
             }
 
             String ticketId = tokens.get(2);
-            String itemId = tokens.get(3);
-            int quantity = Integer.parseInt(tokens. get(4));
+            String cashId = tokens. get(3);
+            String itemId = tokens.get(4);
+
+            // Validar cashier (por ahora solo verificar que existe)
+            userService.findCashierById(cashId);
 
             // Detectar si es servicio (termina en S) o producto
             if (itemId.endsWith("S")) {
                 // Es un servicio
-                ticketService.addServiceToTicket(ticketId, itemId, quantity);
+                ticketService.addServiceToTicket(ticketId, itemId, 1); // Los servicios son cantidad 1
             } else {
-                // Es un producto
-                ticketService.addProductToTicket(ticketId, itemId, quantity);
+                int quantity = Integer.parseInt(tokens.get(5));
+
+                // Detectar personalizaciones (tokens que empiezan con --p)
+                List<String> personalizations = new ArrayList<>();
+                for (int i = 6; i < tokens.size(); i++) {
+                    if (tokens.get(i).startsWith("--p")) {
+                        String personalization = tokens.get(i).substring(3); // Quitar "--p"
+                        personalizations.add(personalization);
+                    }
+                }
+
+                if (! personalizations.isEmpty()) {
+                    // Añadir productos personalizados
+                    ticketService.addPersonalizedProductToTicket(ticketId, itemId, quantity, personalizations);
+                } else {
+                    // Añadir producto normal
+                    ticketService.addProductToTicket(ticketId, itemId, quantity);
+                }
             }
 
-            return "ticket add:  ok";
+            // Mostrar el ticket completo después de añadir
+            Ticket ticket = ticketService.findTicketById(ticketId);
+            return ticket.formatForDisplay() + "\nticket add: ok";
 
         } catch (NumberFormatException e) {
             return "Error: Invalid quantity format";
@@ -661,39 +710,51 @@ public class CommandExecutor {
     }
 
     private String executeTicketRemove(List<String> tokens) {
-        // Formato: ticket remove <ticketId> <lineNumber>
+        // Formato: ticket remove <ticketId> <cashId> <prodId>
 
         try {
-            if (tokens. size() < 4) {
-                return "Usage:  ticket remove <ticketId> <lineNumber>";
+            if (tokens.size() < 5) {
+                return "Usage: ticket remove <ticketId> <cashId> <prodId>";
             }
 
             String ticketId = tokens.get(2);
-            int lineNumber = Integer.parseInt(tokens.get(3));
+            String cashId = tokens.get(3);
+            String productId = tokens.get(4);
 
-            ticketService.removeLineFromTicket(ticketId, lineNumber);
+            // Validar cashier
+            userService.findCashierById(cashId);
 
-            return "ticket remove: ok";
+            // Eliminar todas las líneas con ese producto
+            ticketService.removeProductFromTicket(ticketId, productId);
 
-        } catch (NumberFormatException e) {
-            return "Error: Invalid line number format";
+            // Mostrar el ticket después de eliminar
+            Ticket ticket = ticketService.findTicketById(ticketId);
+            return ticket.formatForDisplay() + "\nticket remove: ok";
+
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
     }
 
     private String executeTicketPrint(List<String> tokens) {
-        // Formato: ticket print <ticketId>
+        // Formato: ticket print <ticketId> <cashId>
 
         try {
-            if (tokens.size() < 3) {
-                return "Usage:  ticket print <ticketId>";
+            if (tokens.size() < 4) {
+                return "Usage:  ticket print <ticketId> <cashId>";
             }
 
             String ticketId = tokens.get(2);
-            String printedTicket = ticketService.printTicket(ticketId);
+            String cashId = tokens.get(3);
 
-            return printedTicket + "\nticket print: ok";
+            // Validar cashier
+            userService.findCashierById(cashId);
+
+            // Cerrar el ticket (esto añade el timestamp al ID)
+            Ticket ticket = ticketService.closeTicket(ticketId);
+
+            // Mostrar el ticket (ya ordenado alfabéticamente)
+            return ticket. formatForDisplay() + "\nticket print: ok";
 
         } catch (Exception e) {
             return "Error: " + e.getMessage();
@@ -701,44 +762,37 @@ public class CommandExecutor {
     }
 
     private String executeTicketList(List<String> tokens) {
-        // Formato 1: ticket list
-        // Formato 2: ticket list <cashId>
+        // Formato: ticket list
 
         try {
-            List<Ticket> tickets;
-
-            if (tokens. size() >= 3) {
-                // Listar por cajero
-                String cashId = tokens.get(2);
-                tickets = ticketService.findTicketsByCashier(cashId);
-            } else {
-                // Listar todos
-                tickets = ticketService.findAllTickets();
-            }
+            List<Ticket> tickets = ticketService.findAllTickets();
 
             if (tickets.isEmpty()) {
-                return "Tickets:\nticket list: ok";
+                return "Ticket List:\nticket list: ok";
             }
 
+            // Ordenar por cashier ID
+            tickets.sort((t1, t2) -> t1.getCashier().getId().compareTo(t2.getCashier().getId()));
+
             StringBuilder sb = new StringBuilder();
-            sb.append("Tickets:\n");
+            sb.append("Ticket List:\n");
 
             for (Ticket ticket : tickets) {
-                sb.append(String.format("  Ticket{id='%s', state=%s, mode=%s, client=%s, total=%.2f}\n",
-                        ticket.getId(),
-                        ticket.getState(),
-                        ticket.getMode(),
-                        ticket.getClient().getId(),
-                        ticket.calculateTotal()));
+                String idToShow = ticket.getDisplayId();
+                sb.append("  ").append(idToShow)
+                        .append(" - ").append(ticket.getState())
+                        .append("\n");
             }
 
             sb.append("ticket list: ok");
             return sb.toString();
 
         } catch (Exception e) {
-            return "Error:  " + e.getMessage();
+            return "Error: " + e.getMessage();
         }
     }
+
+
 
     // ==================== AYUDA ====================
 

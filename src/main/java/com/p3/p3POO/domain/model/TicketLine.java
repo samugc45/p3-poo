@@ -1,9 +1,13 @@
 package com.p3.p3POO.domain.model;
 
 import com.p3.p3POO.domain.model.product.Product;
+import com.p3.p3POO.domain.model.product.ProductPersonalized;
 import com.p3.p3POO.domain.model.service.Service;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,8 +40,15 @@ public class TicketLine {
     @Column
     private Double totalPrice;  // Precio total de la línea (unitPrice * quantity)
 
-    // Constructor sin argumentos (JPA)
-    public TicketLine() {}
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ticket_line_personalizations", joinColumns = @JoinColumn(name = "ticket_line_id"))
+    @Column(name = "personalization")
+    private List<String> personalizations;
+
+    // Constructor vacío (JPA)
+    public TicketLine() {
+        this.personalizations = new ArrayList<>();
+    }
 
     // Constructor para PRODUCTO
     public TicketLine(Ticket ticket, Product product, Integer quantity) {
@@ -47,6 +58,27 @@ public class TicketLine {
         this.quantity = quantity;
         this.unitPrice = product.calculateFinalPrice();
         this.totalPrice = this.unitPrice * quantity;
+        this.personalizations = new ArrayList<>();
+    }
+
+    // Constructor para PRODUCTO PERSONALIZADO
+    public TicketLine(Ticket ticket, Product product, Integer quantity, List<String> personalizations) {
+        this.ticket = ticket;
+        this.product = product;
+        this.service = null;
+        this.quantity = quantity;
+        this.personalizations = personalizations != null ? new ArrayList<>(personalizations) : new ArrayList<>();
+
+        // Calcular precio con personalizaciones
+        if (product instanceof ProductPersonalized && ! this.personalizations.isEmpty()) {
+            ProductPersonalized pp = (ProductPersonalized) product;
+            double surcharge = this.personalizations.size() * pp.getBasePrice() * 0.10;
+            this.unitPrice = pp.getBasePrice() + surcharge;
+        } else {
+            this.unitPrice = product.calculateFinalPrice();
+        }
+
+        this.totalPrice = this. unitPrice * quantity;
     }
 
     // Constructor para SERVICIO (sin precio)
@@ -57,6 +89,18 @@ public class TicketLine {
         this.quantity = quantity;
         this.unitPrice = null;  // Los servicios NO tienen precio al agregarlos
         this.totalPrice = null;
+    }
+
+    public List<String> getPersonalizations() {
+        return personalizations != null ? personalizations : new ArrayList<>();
+    }
+
+    public void setPersonalizations(List<String> personalizations) {
+        this.personalizations = personalizations;
+    }
+
+    public boolean hasPersonalizations() {
+        return personalizations != null && !personalizations.isEmpty();
     }
 
     // Verificar si la línea es un producto

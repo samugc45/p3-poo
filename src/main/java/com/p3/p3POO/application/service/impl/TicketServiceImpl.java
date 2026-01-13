@@ -11,6 +11,7 @@ import com.p3.p3POO.domain.model.TicketLine;
 import com.p3.p3POO.domain.model.enums.TicketMode;
 import com.p3.p3POO.domain.model.enums.TicketState;
 import com.p3.p3POO.domain.model.product.Product;
+import com.p3.p3POO.domain.model.product.ProductPersonalized;
 import com.p3.p3POO.domain.model.user.Cashier;
 import com.p3.p3POO.domain.model.user.Client;
 import com.p3.p3POO.domain.repository.TicketRepository;
@@ -18,6 +19,7 @@ import com.p3.p3POO.infrastructure.exception.DomainException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 @Transactional
@@ -52,6 +54,50 @@ public class TicketServiceImpl implements TicketService {
 
         Ticket ticket = new Ticket(ticketId, cashier, client, mode);
         return ticketRepository.save(ticket);
+    }
+
+    @Override
+    public Ticket createTicketWithId(String ticketId, String cashierId, String clientId, TicketMode mode) {
+        // Validar que el ID no exista
+        if (ticketRepository.existsById(ticketId)) {
+            throw new DomainException("Ticket already exists:  " + ticketId);
+        }
+
+        Cashier cashier = userService.findCashierById(cashierId);
+        Client client = userService.findClientById(clientId);
+
+        Ticket ticket = new Ticket(ticketId, cashier, client, mode);
+        return ticketRepository.save(ticket);
+    }
+
+    @Override
+    public void addPersonalizedProductToTicket(String ticketId, String productId, Integer quantity, List<String> personalizations) {
+        Ticket ticket = findTicketById(ticketId);
+
+        if (ticket. getState() == TicketState.CLOSE) {
+            throw new DomainException("Cannot add products to a closed ticket");
+        }
+
+        Product product = productService.findProductById(productId);
+
+        if (!(product instanceof ProductPersonalized)) {
+            throw new DomainException("Product is not personalizable:  " + productId);
+        }
+
+        ProductPersonalized personalizable = (ProductPersonalized) product;
+
+        // Validar que no supere el máximo de personalizaciones
+        if (personalizations.size() > personalizable.getMaxPersonalizations()) {
+            throw new DomainException("Exceeded max personalizations:  " + personalizable.getMaxPersonalizations());
+        }
+
+        // Crear quantity líneas, cada una con las personalizaciones
+        for (int i = 0; i < quantity; i++) {
+            TicketLine line = new TicketLine(ticket, personalizable, 1, personalizations);
+            ticket.addLine(line);
+        }
+
+        ticketRepository.save(ticket);
     }
 
     @Override
@@ -131,11 +177,11 @@ public class TicketServiceImpl implements TicketService {
             throw new DomainException("Cannot remove lines from a closed ticket");
         }
 
-        List<TicketLine> lines = ticket.getTicketLines();
+        List<TicketLine> lines = ticket. getTicketLines();
 
         // lineNumber empieza en 1 (no en 0)
-        if (lineNumber < 1 || lineNumber > lines. size()) {
-            throw new DomainException("Invalid line number:  " + lineNumber);
+        if (lineNumber < 1 || lineNumber > lines.size()) {
+            throw new DomainException("Invalid line number: " + lineNumber);
         }
 
         TicketLine lineToRemove = lines.get(lineNumber - 1);
@@ -143,6 +189,32 @@ public class TicketServiceImpl implements TicketService {
 
         ticketRepository.save(ticket);
     }
+
+    @Override
+    public void removeProductFromTicket(String ticketId, String productId) {
+        Ticket ticket = findTicketById(ticketId);
+
+        if (ticket.getState() == TicketState.CLOSE) {
+            throw new DomainException("Cannot remove products from a closed ticket");
+        }
+
+        // Encontrar y eliminar TODAS las líneas con ese producto
+        List<TicketLine> linesToRemove = ticket.getTicketLines().stream()
+                .filter(line -> line.isProduct() && line.getProduct().getId().equals(productId))
+                .collect(Collectors.toList());
+
+        if (linesToRemove.isEmpty()) {
+            throw new DomainException("Product not found in ticket:  " + productId);
+        }
+
+        // Eliminar todas las líneas
+        for (TicketLine line : linesToRemove) {
+            ticket.removeLine(line);
+        }
+
+        ticketRepository.save(ticket);
+    }
+
 
     @Override
     public String printTicket(String ticketId) {
@@ -160,7 +232,7 @@ public class TicketServiceImpl implements TicketService {
     public Ticket closeTicket(String ticketId) {
         Ticket ticket = findTicketById(ticketId);
         ticket.close();
-        return ticketRepository. save(ticket);
+        return ticketRepository.save(ticket);
     }
 
     @Override
