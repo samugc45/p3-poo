@@ -47,7 +47,6 @@ public class Cashier extends User {
 
     @Override
     public String toString() {
-        return String.format("Cash{identifier='%s', name='%s', email='%s'}",
-            employeeCode, name, email);
+        return String.format("Cash{identifier='%s', name='%s', email='%s'}", employeeCode, name, email);
     }
 }

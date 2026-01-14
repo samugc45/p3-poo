@@ -25,27 +25,23 @@ public class ConsoleRunner implements CommandLineRunner {
             System.out. print("tUPM> ");
             String input = scanner.nextLine();
 
-            if (input. trim().isEmpty()) {
+            if (input.trim().isEmpty()) {
                 continue;
             }
 
             String result = commandExecutor.execute(input);
 
-            // Si el resultado es "exit", salir
             if ("exit".equals(result)) {
                 System.out.println("Closing application.");
                 System.out.println("Goodbye!");
                 break;
             }
 
-            // Mostrar resultado (si no está vacío)
             if (!result.isEmpty()) {
                 System.out.println(result);
             }
-
-            System.out.println(); // Línea en blanco después de cada comando
+            System.out.println();
         }
-
         scanner.close();
     }
 }

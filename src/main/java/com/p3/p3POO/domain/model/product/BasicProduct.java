@@ -1,4 +1,4 @@
-package com.p3.p3POO.domain.model. product;
+package com.p3.p3POO.domain.model.product;
 
 import com.p3.p3POO.domain.model.enums.TCategory;
 import jakarta.persistence.*;
@@ -34,8 +34,6 @@ public class BasicProduct extends Product {
     @Override
     public String toString() {
         // Forzar formato inglés (punto decimal) usando Locale.US
-        return String.format(java.util.Locale.US,
-                "{class: Product, id:%s, name:'%s', category:%s, price: %.1f}",
-                id, name, category, basePrice);
+        return String.format(java.util.Locale.US, "{class: Product, id:%s, name:'%s', category:%s, price: %.1f}", id, name, category, basePrice);
     }
 }

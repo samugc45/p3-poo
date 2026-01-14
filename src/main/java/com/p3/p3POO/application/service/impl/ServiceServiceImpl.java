@@ -50,13 +50,12 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     @Transactional(readOnly = true)
     public com.p3.p3POO.domain.model.service.Service findServiceById(String id) {
-        return serviceRepository.findById(id)
-                .orElseThrow(() -> new DomainException("Service not found: " + id));
+        return serviceRepository.findById(id).orElseThrow(() -> new DomainException("Service not found: " + id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<com. p3.p3POO. domain.model.service.Service> findAllServices() {
+    public List<com. p3.p3POO.domain.model.service.Service> findAllServices() {
         return serviceRepository.findAll();
     }
 

@@ -42,8 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public BasicProduct updateProduct(String id, String field, String value) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new DomainException("Product not found:  " + id));
+        Product product = productRepository.findById(id).orElseThrow(() -> new DomainException("Product not found:  " + id));
 
         // Solo se pueden actualizar BasicProduct
         if (!(product instanceof BasicProduct)) {
@@ -66,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
                 break;
             case "PRICE":
                 try {
-                    double price = Double. parseDouble(value);
+                    double price = Double.parseDouble(value);
                     if (price <= 0) {
                         throw new DomainException("Price must be positive");
                     }
@@ -87,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.existsById(product. getId())) {
             throw new DomainException("Product already exists: " + product.getId());
         }
-        return productRepository. save(product);
+        return productRepository.save(product);
     }
 
     @Override
@@ -146,8 +145,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Product findProductById(String id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new DomainException("Product not found:  " + id));
+        return productRepository.findById(id).orElseThrow(() -> new DomainException("Product not found:  " + id));
     }
 
     @Override

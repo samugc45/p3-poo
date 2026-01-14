@@ -36,7 +36,7 @@ public class Service {
 
     // Validar si el servicio puede agregarse en una fecha determinada
     public boolean isValidForDate(LocalDate currentDate) {
-        return currentDate. isBefore(maxUsageDate) || currentDate.isEqual(maxUsageDate);
+        return currentDate.isBefore(maxUsageDate) || currentDate.isEqual(maxUsageDate);
     }
 
     // Generador de ID secuencial:  1S, 2S, 3S, etc.
@@ -49,7 +49,6 @@ public class Service {
         // Formato: {class:ProductService, id:1, category:INSURANCE, expiration:Sun Dec 21 00:00:00 CET 2025}
         java.time.ZonedDateTime zdt = maxUsageDate.atStartOfDay(java.time.ZoneId.of("CET"));
         java.util.Date date = java.util.Date.from(zdt.toInstant());
-        return String.format("{class:ProductService, id:%s, category:%s, expiration:%s}",
-                id, serviceType, date);
+        return String.format("{class:ProductService, id:%s, category:%s, expiration:%s}", id, serviceType, date);
     }
 }

@@ -109,24 +109,17 @@ public class Ticket {
 
     // Calcular total del ticket
     public Double calculateTotal() {
-        return ticketLines.stream()
-                .filter(line -> line.getTotalPrice() != null)
-                .mapToDouble(TicketLine::getTotalPrice)
-                .sum();
+        return ticketLines.stream().filter(line -> line.getTotalPrice() != null).mapToDouble(TicketLine::getTotalPrice).sum();
     }
 
     // Contar productos en el ticket
     public long countProducts() {
-        return ticketLines.stream()
-                .filter(TicketLine::isProduct)
-                .count();
+        return ticketLines.stream().filter(TicketLine::isProduct).count();
     }
 
     // Contar servicios en el ticket
     public long countServices() {
-        return ticketLines.stream()
-                .filter(TicketLine::isService)
-                .count();
+        return ticketLines.stream().filter(TicketLine::isService).count();
     }
 
     // Cerrar ticket
@@ -140,7 +133,7 @@ public class Ticket {
         this.closeDate = LocalDateTime.now();
 
         // Crear displayId con timestamp (NO modificar id)
-        DateTimeFormatter formatter = DateTimeFormatter. ofPattern("yy-MM-dd-HH: mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd-HH: mm");
         String timestamp = closeDate.format(formatter);
         this.displayId = this.id + "-" + timestamp;
 
@@ -170,9 +163,6 @@ public class Ticket {
         return "TK" + timestamp + String.format("%04d", random);
     }
 
-    /**
-     * Calcula el precio total SIN descuentos
-     */
     public Double calculateTotalPrice() {
         double total = 0.0;
 
@@ -185,18 +175,12 @@ public class Ticket {
         return total;
     }
 
-    /**
-     * Calcula el descuento total aplicado
-     */
     public Double calculateTotalDiscount() {
         double totalPrice = calculateTotalPrice();
         double finalPrice = calculateFinalPrice();
         return totalPrice - finalPrice;
     }
 
-    /**
-     * Calcula el precio final CON descuentos (por categoría y servicios)
-     */
     public Double calculateFinalPrice() {
         // Agrupar productos por categoría para aplicar descuentos
         Map<TCategory, List<TicketLine>> productsByCategory = new HashMap<>();
@@ -229,9 +213,7 @@ public class Ticket {
                 // Aplicar descuento solo si hay ≥2 productos de esa categoría
                 if (product.getCategory() != null) {
                     List<TicketLine> categoryLines = productsByCategory.get(product.getCategory());
-                    int totalQuantity = categoryLines. stream()
-                            .mapToInt(TicketLine:: getQuantity)
-                            . sum();
+                    int totalQuantity = categoryLines. stream().mapToInt(TicketLine:: getQuantity).sum();
 
                     if (totalQuantity >= 2) {
                         double discount = product.getCategory().getDiscount();
@@ -265,7 +247,7 @@ public class Ticket {
         for (TicketLine line : ticketLines) {
             if (line.isProduct() && line.getProduct() != null && line.getProduct().getCategory() != null) {
                 TCategory category = line.getProduct().getCategory();
-                quantityByCategory.put(category, quantityByCategory. getOrDefault(category, 0) + line.getQuantity());
+                quantityByCategory.put(category, quantityByCategory.getOrDefault(category, 0) + line.getQuantity());
             }
         }
 
@@ -355,8 +337,7 @@ public class Ticket {
             sb.append(String.format(java.util.Locale.US, "  Total price: %.1f\n", totalPrice));
             if (mode == TicketMode.DETAILED && hasServices() && hasProducts()) {
                 double extraDiscount = totalPrice * 0.30;
-                sb.append(String.format(java.util.Locale.US,
-                        "  Extra Discount from services:%.1f **discount -%.1f\n", extraDiscount, extraDiscount));
+                sb.append(String.format(java.util.Locale.US, "  Extra Discount from services:%.1f **discount -%.1f\n", extraDiscount, extraDiscount));
             }
             sb.append(String.format(java.util.Locale.US, "  Total discount: %.1f\n", totalDiscount));
             sb.append(String.format(java.util.Locale.US, "  Final Price: %.1f", finalPrice));
@@ -384,7 +365,7 @@ public class Ticket {
         for (TicketLine line : ticketLines) {
             if (line.isProduct() && line.getProduct() != null && line.getProduct().getCategory() != null) {
                 TCategory category = line.getProduct().getCategory();
-                quantityByCategory.put(category, quantityByCategory. getOrDefault(category, 0) + line.getQuantity());
+                quantityByCategory.put(category, quantityByCategory.getOrDefault(category, 0) + line.getQuantity());
             }
         }
 

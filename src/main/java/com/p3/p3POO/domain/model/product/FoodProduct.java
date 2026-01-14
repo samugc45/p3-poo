@@ -47,15 +47,13 @@ public class FoodProduct extends Event {
         LocalDate eventDay = eventDate.toLocalDate();
         long daysBetween = ChronoUnit.DAYS.between(now, eventDay);
 
-        boolean notExpired = now. isBefore(expirationDate) || now.isEqual(expirationDate);
+        boolean notExpired = now.isBefore(expirationDate) || now.isEqual(expirationDate);
 
         return daysBetween >= MIN_PLANNING_DAYS && notExpired;
     }
 
     @Override
     public String toString() {
-        return String.format(java. util.Locale.US,
-                "{class:Food, id:%s, name:'%s', price:%.1f, date of Event:%s, max people allowed:%d}",
-                id, name, basePrice, eventDate.toLocalDate(), maxParticipants);
+        return String.format(java. util.Locale.US, "{class:Food, id:%s, name:'%s', price:%.1f, date of Event:%s, max people allowed:%d}", id, name, basePrice, eventDate.toLocalDate(), maxParticipants);
     }
 }

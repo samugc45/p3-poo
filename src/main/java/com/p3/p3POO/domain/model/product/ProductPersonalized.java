@@ -59,13 +59,9 @@ public class ProductPersonalized extends Product {
     @Override
     public String toString() {
         if (personalizationList == null || personalizationList.isEmpty()) {
-            return String.format(java.util.Locale.US,
-                    "{class:ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d}",
-                    id, name, category, basePrice, maxPersonalizations);
+            return String.format(java.util.Locale.US, "{class:ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d}", id, name, category, basePrice, maxPersonalizations);
         } else {
-            return String.format(java.util.Locale.US,
-                    "{class:ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}",
-                    id, name, category, basePrice, maxPersonalizations, personalizationList);
+            return String.format(java.util.Locale.US, "{class:ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}", id, name, category, basePrice, maxPersonalizations, personalizationList);
         }
     }
 
@@ -76,8 +72,6 @@ public class ProductPersonalized extends Product {
         // Calcula precio con personalizaciones
         double surcharge = personalizations.size() * basePrice * 0.10;
         double priceWithPersonalizations = basePrice + surcharge;
-        return String.format(java.util.Locale.US,
-                "{class: ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}",
-                id, name, category, priceWithPersonalizations, maxPersonalizations, personalizations);
+        return String.format(java.util.Locale.US, "{class: ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}", id, name, category, priceWithPersonalizations, maxPersonalizations, personalizations);
     }
 }

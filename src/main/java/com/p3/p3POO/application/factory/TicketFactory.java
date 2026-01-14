@@ -27,12 +27,10 @@ public class TicketFactory {
      */
     public Ticket createTicket(String cashierId, String clientId) {
         // Verificar que el cliente existe
-        Client client = userService. findClientById(clientId);
+        Client client = userService.findClientById(clientId);
 
         // Determinar el modo según el tipo de cliente
-        TicketMode mode = (client instanceof CompanyClient)
-                ? TicketMode. DETAILED
-                : TicketMode.BASIC;
+        TicketMode mode = (client instanceof CompanyClient) ? TicketMode.DETAILED : TicketMode.BASIC;
 
         // Crear el ticket con el modo apropiado
         return ticketService.createTicket(cashierId, clientId, mode);
@@ -47,9 +45,7 @@ public class TicketFactory {
 
         // Validar que clientes normales no pueden tener tickets DETAILED
         if (!(client instanceof CompanyClient) && mode == TicketMode. DETAILED) {
-            throw new DomainException(
-                    "DETAILED tickets (with services) are only allowed for company clients"
-            );
+            throw new DomainException("DETAILED tickets (with services) are only allowed for company clients");
         }
 
         return ticketService.createTicket(cashierId, clientId, mode);

@@ -41,18 +41,12 @@ public class EventValidator {
         // Validar antelación de 3 días
         long daysBetween = ChronoUnit.DAYS.between(now, eventDay);
         if (daysBetween < MIN_FOOD_DAYS) {
-            throw new DomainException(
-                    String.format("Food event must be created at least %d days in advance. Days remaining: %d",
-                            MIN_FOOD_DAYS, daysBetween)
-            );
+            throw new DomainException(String.format("Food event must be created at least %d days in advance. Days remaining: %d", MIN_FOOD_DAYS, daysBetween));
         }
 
         // Validar que no haya caducado
         if (now.isAfter(expirationDate)) {
-            throw new DomainException(
-                    String.format("Food product has expired. Expiration date: %s, Current date: %s",
-                            expirationDate, now)
-            );
+            throw new DomainException(String.format("Food product has expired. Expiration date: %s, Current date: %s", expirationDate, now));
         }
     }
 
@@ -61,10 +55,7 @@ public class EventValidator {
      */
     public void validateMeetingForTicket(MeetingProduct meeting, LocalDate currentDate) {
         if (!meeting.isValidForDate(currentDate)) {
-            throw new DomainException(
-                    String.format("Meeting event %s is not valid for date %s (requires 12h advance)",
-                            meeting.getId(), currentDate)
-            );
+            throw new DomainException(String.format("Meeting event %s is not valid for date %s (requires 12h advance)", meeting.getId(), currentDate));
         }
     }
 
@@ -73,10 +64,7 @@ public class EventValidator {
      */
     public void validateFoodForTicket(FoodProduct food, LocalDate currentDate) {
         if (!food.isValidForDate(currentDate)) {
-            throw new DomainException(
-                    String.format("Food event %s is not valid for date %s (requires 3 days advance and not expired)",
-                            food. getId(), currentDate)
-            );
+            throw new DomainException(String.format("Food event %s is not valid for date %s (requires 3 days advance and not expired)", food. getId(), currentDate));
         }
     }
 }

@@ -7,11 +7,6 @@ import java.util.regex.Pattern;
 
 public class CommandParser {
 
-    /**
-     * Parsea una línea de comando en partes, respetando comillas y espacios
-     * Ejemplo: prod add 1 "Libro POO" BOOK 25
-     * Resultado: ["prod", "add", "1", "Libro POO", "BOOK", "25"]
-     */
     public static List<String> parse(String commandLine) {
         List<String> tokens = new ArrayList<>();
 
@@ -26,18 +21,17 @@ public class CommandParser {
             if (matcher.group(1) != null) {
                 // Texto entre comillas
                 tokens.add(matcher.group(1));
-            } else if (matcher. group(2) != null) {
+            } else if (matcher.group(2) != null) {
                 // Flag de personalización (--pred → "red")
                 tokens.add("--p" + matcher.group(2));
-            } else if (matcher. group(3) != null) {
+            } else if (matcher.group(3) != null) {
                 // Flag corto (-s, -c, -p)
                 tokens.add("-" + matcher.group(3));
             } else if (matcher.group(4) != null) {
                 // Palabra normal
-                tokens.add(matcher. group(4));
+                tokens.add(matcher.group(4));
             }
         }
-
         return tokens;
     }
 

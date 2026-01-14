@@ -3,13 +3,13 @@ package com.p3.p3POO.infrastructure.command;
 import com. p3.p3POO.application.factory.TicketFactory;
 import com.p3.p3POO.application.service.*;
 import com.p3.p3POO.application.strategy.BasicTicketPrintStrategy;
-import com.p3.p3POO.application. strategy.DetailedTicketPrintStrategy;
+import com.p3.p3POO.application.strategy.DetailedTicketPrintStrategy;
 import com.p3.p3POO.application.validator.EventValidator;
 import com.p3.p3POO.domain.model.Ticket;
 import com.p3.p3POO.domain.model.enums.ServiceType;
 import com.p3.p3POO.domain.model.enums.TCategory;
 import com.p3.p3POO.domain.model.enums.TicketMode;
-import com.p3.p3POO.domain.model. TicketLine;
+import com.p3.p3POO.domain.model.TicketLine;
 import com.p3.p3POO.domain.model.product.*;
 import com.p3.p3POO.domain.model.service.Service;
 import com.p3.p3POO.domain.model.user.Cashier;
@@ -57,12 +57,12 @@ public class CommandExecutor {
      * Ejecuta un comando y retorna el resultado
      */
     public String execute(String commandLine) {
-        if (commandLine == null || commandLine. trim().isEmpty()) {
+        if (commandLine == null || commandLine.trim().isEmpty()) {
             return "";
         }
 
         // Parsear la línea de comando
-        List<String> tokens = CommandParser.parse(commandLine. trim());
+        List<String> tokens = CommandParser.parse(commandLine.trim());
 
         if (tokens.isEmpty()) {
             return "";
@@ -72,33 +72,20 @@ public class CommandExecutor {
 
         try {
             switch (command) {
-                // ========== ECHO ==========
                 case "echo":
                     return executeEcho(tokens);
-
-                // ========== AYUDA ==========
                 case "help":
                     return getHelpMessage();
-
-                // ========== SALIR ==========
                 case "exit":
-                    return "exit"; // Señal especial para ConsoleRunner
-
-                // ========== CASH ==========
+                    return "exit";
                 case "cash":
                     return executeCash(tokens);
-
-                // ========== CLIENT ==========
                 case "client":
                     return executeClient(tokens);
-
-                // ========== PROD ==========
                 case "prod":
                     return executeProd(tokens);
-                // ========== TICKET ==========
                 case "ticket":
                     return executeTicket(tokens);
-
                 default:
                     return "Unknown command: '" + command + "'.  Type 'help' for available commands.";
             }
@@ -119,7 +106,6 @@ public class CommandExecutor {
             return "Usage: echo \"<text>\"";
         }
 
-        // El texto está en tokens. get(1) (ya sin comillas por el parser)
         return "\"" + tokens.get(1) + "\"";
     }
 
@@ -175,7 +161,7 @@ public class CommandExecutor {
                 cashier = userService.createCashierAutoId(name, email);
             }
 
-            return cashier. toString() + "\ncash add: ok";
+            return cashier.toString() + "\ncash add: ok";
 
         } catch (Exception e) {
             return "Error: " + e.getMessage();
@@ -194,7 +180,7 @@ public class CommandExecutor {
         sb.append("Cash:\n");
 
         // Ordenar por ID
-        cashiers. sort((c1, c2) -> c1.getEmployeeCode().compareTo(c2.getEmployeeCode()));
+        cashiers.sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
 
         for (Cashier cashier : cashiers) {
             sb.append("  ").append(cashier.toString()).append("\n");
@@ -229,7 +215,7 @@ public class CommandExecutor {
         String cashierId = tokens.get(2);
 
         try {
-            List<Ticket> tickets = ticketService. findTicketsByCashier(cashierId);
+            List<Ticket> tickets = ticketService.findTicketsByCashier(cashierId);
 
             if (tickets.isEmpty()) {
                 return "Tickets:  \ncash tickets:  ok";
@@ -317,7 +303,6 @@ public class CommandExecutor {
         StringBuilder sb = new StringBuilder();
         sb.append("Client:\n");
 
-        // Ordenar por ID (descendente alfabéticamente como en el output esperado)
         clients.sort((c1, c2) -> c2.getId().compareTo(c1.getId()));
 
         for (Client client : clients) {
@@ -329,7 +314,7 @@ public class CommandExecutor {
     }
 
     private String executeClientRemove(List<String> tokens) {
-        // Formato: client remove <DNI>
+        //client remove <DNI>
         if (tokens.size() < 3) {
             return "Usage:  client remove <DNI>";
         }
@@ -397,24 +382,24 @@ public class CommandExecutor {
             if (tokens.size() == 6) {
                 String id = tokens.get(2);
                 String name = tokens.get(3);
-                String categoryStr = tokens. get(4);
-                double price = Double.parseDouble(tokens. get(5));
+                String categoryStr = tokens.get(4);
+                double price = Double.parseDouble(tokens.get(5));
 
                 TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
                 BasicProduct product = productService.createBasicProduct(id, name, price, category);
-                return product. toString() + "\nprod add: ok";
+                return product.toString() + "\nprod add: ok";
             }
 
             // CASO 4: prod add "<name>" <category> <price>
             if (tokens.size() == 5) {
                 String name = tokens.get(2);
-                String categoryStr = tokens. get(3);
-                double price = Double.parseDouble(tokens. get(4));
+                String categoryStr = tokens.get(3);
+                double price = Double.parseDouble(tokens.get(4));
 
                 TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
                 String id = "0"; // ID por defecto
                 BasicProduct product = productService.createBasicProduct(id, name, price, category);
-                return product. toString() + "\nprod add: ok";
+                return product.toString() + "\nprod add: ok";
             }
 
             return "Usage: prod add [<id>] \"<name>\" <category> <price> [<maxPersonalizations>]";
@@ -422,7 +407,7 @@ public class CommandExecutor {
         } catch (IllegalArgumentException e) {
             return "Error: Invalid category or format";
         } catch (Exception e) {
-            return "Error: " + e. getMessage();
+            return "Error: " + e.getMessage();
         }
     }
 
@@ -489,7 +474,7 @@ public class CommandExecutor {
             String name = tokens.get(3);
             double price = Double.parseDouble(tokens.get(4));
             String dateStr = tokens.get(5);
-            int maxPeople = Integer.parseInt(tokens. get(6));
+            int maxPeople = Integer.parseInt(tokens.get(6));
 
             // Parsear fecha con hora de mediodía
             LocalDate eventDateLocal = LocalDate.parse(dateStr);
@@ -616,7 +601,7 @@ public class CommandExecutor {
             if (tokens.size() >= 6) {
                 // Formato 3: con ID y opción
                 ticketId = tokens.get(2);
-                cashId = tokens. get(3);
+                cashId = tokens.get(3);
                 clientId = tokens.get(4);
                 String option = tokens.get(5);
 
@@ -626,7 +611,7 @@ public class CommandExecutor {
                 } else if (option.equals("-p")) {
                     mode = TicketMode.BASIC; // Solo productos
                 } else if (option.equals("-s")) {
-                    mode = TicketMode. DETAILED; // Solo servicios (usa DETAILED)
+                    mode = TicketMode.DETAILED; // Solo servicios (usa DETAILED)
                 }
             } else if (tokens.size() >= 5) {
                 // Formato 2: con ID
@@ -667,7 +652,7 @@ public class CommandExecutor {
             }
 
             String ticketId = tokens.get(2);
-            String cashId = tokens. get(3);
+            String cashId = tokens.get(3);
             String itemId = tokens.get(4);
 
             // Validar cashier (por ahora solo verificar que existe)

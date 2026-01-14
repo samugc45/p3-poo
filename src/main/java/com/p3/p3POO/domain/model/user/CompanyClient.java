@@ -40,7 +40,6 @@ public class CompanyClient extends Client {
 
     @Override
     public String toString() {
-        return String.format("COMPANY{identifier='%s', name='%s', email='%s', cash=%s}",
-                nif, companyName, email, registeredBy.getEmployeeCode());
+        return String.format("COMPANY{identifier='%s', name='%s', email='%s', cash=%s}", nif, companyName, email, registeredBy.getEmployeeCode());
     }
 }

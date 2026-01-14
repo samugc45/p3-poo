@@ -1,6 +1,6 @@
 package com.p3.p3POO.domain.model.user;
 
-import com.p3.p3POO.domain.model. Ticket;
+import com.p3.p3POO.domain.model.Ticket;
 import com.p3.p3POO.domain.model.enums.ClientType;
 import com.p3.p3POO.infrastructure.exception.DomainException;
 import jakarta.persistence.*;
@@ -54,7 +54,6 @@ public class Client extends User {
 
     @Override
     public String toString() {
-        return String.format("USER{identifier='%s', name='%s', email='%s', cash=%s}",
-                dni, name, email, registeredBy.getEmployeeCode());
+        return String.format("USER{identifier='%s', name='%s', email='%s', cash=%s}", dni, name, email, registeredBy.getEmployeeCode());
     }
 }

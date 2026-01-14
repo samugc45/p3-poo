@@ -1,4 +1,4 @@
-package com.p3.p3POO.application. service.impl;
+package com.p3.p3POO.application.service.impl;
 
 import com.p3.p3POO.application.service.TicketService;
 import com.p3.p3POO.application.service.UserService;
@@ -44,12 +44,12 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket createTicket(String cashierId, String clientId, TicketMode mode) {
-        Cashier cashier = userService. findCashierById(cashierId);
+        Cashier cashier = userService.findCashierById(cashierId);
         Client client = userService.findClientById(clientId);
 
         String ticketId = Ticket.generateId();
         while (ticketRepository.existsById(ticketId)) {
-            ticketId = Ticket. generateId();
+            ticketId = Ticket.generateId();
         }
 
         Ticket ticket = new Ticket(ticketId, cashier, client, mode);
@@ -103,8 +103,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional(readOnly = true)
     public Ticket findTicketById(String ticketId) {
-        return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new DomainException("Ticket not found: " + ticketId));
+        return ticketRepository.findById(ticketId).orElseThrow(() -> new DomainException("Ticket not found: " + ticketId));
     }
 
     @Override
@@ -116,7 +115,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional(readOnly = true)
     public List<Ticket> findTicketsByCashier(String cashierId) {
-        Cashier cashier = userService. findCashierById(cashierId);
+        Cashier cashier = userService.findCashierById(cashierId);
         return ticketRepository.findByCashier(cashier);
     }
 
@@ -141,7 +140,7 @@ public class TicketServiceImpl implements TicketService {
             throw new DomainException("Cannot add products to a closed ticket");
         }
 
-        Product product = productService. findProductById(productId);
+        Product product = productService.findProductById(productId);
 
         TicketLine line = new TicketLine(ticket, product, quantity);
         ticket.addLine(line);
@@ -199,9 +198,7 @@ public class TicketServiceImpl implements TicketService {
         }
 
         // Encontrar y eliminar TODAS las líneas con ese producto
-        List<TicketLine> linesToRemove = ticket.getTicketLines().stream()
-                .filter(line -> line.isProduct() && line.getProduct().getId().equals(productId))
-                .collect(Collectors.toList());
+        List<TicketLine> linesToRemove = ticket.getTicketLines().stream().filter(line -> line.isProduct() && line.getProduct().getId().equals(productId)).collect(Collectors.toList());
 
         if (linesToRemove.isEmpty()) {
             throw new DomainException("Product not found in ticket:  " + productId);

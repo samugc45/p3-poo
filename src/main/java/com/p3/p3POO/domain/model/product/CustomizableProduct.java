@@ -54,11 +54,11 @@ public class CustomizableProduct {
     }
 
     public String getProductId() {
-        return baseProduct. getId();
+        return baseProduct.getId();
     }
 
     public String getName() {
-        return baseProduct. getName();
+        return baseProduct.getName();
     }
 
     public TCategory getCategory() {
@@ -66,6 +66,6 @@ public class CustomizableProduct {
     }
 
     public boolean isValidForDate(LocalDate date) {
-        return baseProduct. isValidForDate(date);
+        return baseProduct.isValidForDate(date);
     }
 }

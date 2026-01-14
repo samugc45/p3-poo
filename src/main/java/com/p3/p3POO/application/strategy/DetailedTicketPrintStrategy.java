@@ -33,7 +33,7 @@ public class DetailedTicketPrintStrategy implements TicketPrintStrategy {
 
         for (TicketLine line : ticket.getTicketLines()) {
             if (line.isProduct()) {
-                String formattedPrice = String.format(Locale.US, "%. 2f", line.getTotalPrice());
+                String formattedPrice = String.format(Locale.US, "%.2f", line.getTotalPrice());
                 sb.append(lineNum).append(". ")
                         .append(line.getProduct().getName())
                         .append(" x").append(line.getQuantity())

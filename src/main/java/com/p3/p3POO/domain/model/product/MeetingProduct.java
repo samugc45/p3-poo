@@ -42,8 +42,6 @@ public class MeetingProduct extends Event {
 
     @Override
     public String toString() {
-        return String.format(java.util.Locale.US,
-                "{class: Meeting, id:%s, name:'%s', price: %.1f, date of Event:%s, max people allowed:%d}",
-                id, name, basePrice, eventDate. toLocalDate(), maxParticipants);
+        return String.format(java.util.Locale.US, "{class: Meeting, id:%s, name:'%s', price: %.1f, date of Event:%s, max people allowed:%d}", id, name, basePrice, eventDate. toLocalDate(), maxParticipants);
     }
 }

@@ -38,13 +38,11 @@ public abstract class Event extends Product {
         this.actualPeople = 0;
     }
 
-    // ✅ IMPLEMENTACIÓN OBLIGATORIA de calculateFinalPrice() heredado de Product
     @Override
     public Double calculateFinalPrice() {
         return basePrice * actualPeople;
     }
 
-    // Sobrescribir setCategory para que lance excepción
     @Override
     public void setCategory(TCategory category) {
         throw new UnsupportedOperationException("Events cannot have a category");
