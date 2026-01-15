@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Data
 @Entity
 @Table(name = "tickets")
 public class Ticket {
@@ -83,7 +82,74 @@ public class Ticket {
         this.openDate = LocalDateTime.now();
     }
 
-    // Añadir línea al ticket
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDisplayId(String displayId) {
+        this.displayId = displayId;
+    }
+
+    public TicketState getState() {
+        return state;
+    }
+
+    public void setState(TicketState state) {
+        this.state = state;
+    }
+
+    public TicketMode getMode() {
+        return mode;
+    }
+
+    public void setMode(TicketMode mode) {
+        this.mode = mode;
+    }
+
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public void setCashier(Cashier cashier) {
+        this.cashier = cashier;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public List<TicketLine> getTicketLines() {
+        return ticketLines;
+    }
+
+    public void setTicketLines(List<TicketLine> ticketLines) {
+        this.ticketLines = ticketLines;
+    }
+
+    public LocalDateTime getOpenDate() {
+        return openDate;
+    }
+
+    public void setOpenDate(LocalDateTime openDate) {
+        this.openDate = openDate;
+    }
+
+    public LocalDateTime getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(LocalDateTime closeDate) {
+        this.closeDate = closeDate;
+    }
+
     public void addLine(TicketLine line) {
         this.ticketLines. add(line);
         line.setTicket(this);
@@ -97,7 +163,6 @@ public class Ticket {
         return displayId != null ? displayId : id;
     }
 
-    // Eliminar línea del ticket
     public void removeLine(TicketLine line) {
         this.ticketLines.remove(line);
         line.setTicket(null);
@@ -107,23 +172,18 @@ public class Ticket {
         }
     }
 
-    // Calcular total del ticket
     public Double calculateTotal() {
         return ticketLines.stream().filter(line -> line.getTotalPrice() != null).mapToDouble(TicketLine::getTotalPrice).sum();
     }
 
-    // Contar productos en el ticket
     public long countProducts() {
         return ticketLines.stream().filter(TicketLine::isProduct).count();
     }
 
-    // Contar servicios en el ticket
     public long countServices() {
         return ticketLines.stream().filter(TicketLine::isService).count();
     }
 
-    // Cerrar ticket
-    // Cerrar ticket
     public void close() {
         if (this.state == TicketState.CLOSE) {
             return; // Ya está cerrado
@@ -132,12 +192,10 @@ public class Ticket {
         this.state = TicketState.CLOSE;
         this.closeDate = LocalDateTime.now();
 
-        // Crear displayId con timestamp (NO modificar id)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd-HH: mm");
         String timestamp = closeDate.format(formatter);
         this.displayId = this.id + "-" + timestamp;
 
-        // Ordenar productos alfabéticamente por nombre
         if (ticketLines != null && !ticketLines.isEmpty()) {
             ticketLines.sort((line1, line2) -> {
                 if (line1.isProduct() && line2.isProduct()) {
@@ -156,7 +214,6 @@ public class Ticket {
     }
 
     public static String generateId() {
-        // Formato: TK + timestamp + random
         LocalDateTime now = LocalDateTime.now();
         String timestamp = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         int random = (int) (Math.random() * 10000);
@@ -182,29 +239,23 @@ public class Ticket {
     }
 
     public Double calculateFinalPrice() {
-        // Agrupar productos por categoría para aplicar descuentos
         Map<TCategory, List<TicketLine>> productsByCategory = new HashMap<>();
 
         for (TicketLine line : ticketLines) {
             if (line.isProduct() && line.getProduct() != null) {
                 Product product = line.getProduct();
 
-                // Solo productos básicos y personalizados tienen categoría
                 if (product instanceof BasicProduct || product instanceof ProductPersonalized) {
                     TCategory category = product.getCategory();
                     if (category != null) {
                         productsByCategory.computeIfAbsent(category, k -> new ArrayList<>()).add(line);
                     }
-                } else if (product instanceof Event) {
-                    // Eventos no tienen descuento por categoría
-                    // Se añaden al total sin categoría
                 }
             }
         }
 
         double finalPrice = 0.0;
 
-        // Calcular precio con descuento por categoría (solo si ≥2 unidades)
         for (TicketLine line : ticketLines) {
             if (line.isProduct() && line.getProduct() != null) {
                 Product product = line.getProduct();
@@ -225,7 +276,6 @@ public class Ticket {
             }
         }
 
-        // Aplicar descuento extra del 30% si hay servicios en ticket combinado
         if (mode == TicketMode.DETAILED && hasServices() && hasProducts()) {
             finalPrice = finalPrice * 0.70; // 30% de descuento
         }
@@ -233,15 +283,11 @@ public class Ticket {
         return finalPrice;
     }
 
-    /**
-     * Calcula el descuento de un producto individual
-     */
     public Double calculateProductDiscount(Product product, int quantity) {
         if (product. getCategory() == null) {
             return 0.0;
         }
 
-        // Agrupar productos por categoría
         Map<TCategory, Integer> quantityByCategory = new HashMap<>();
 
         for (TicketLine line : ticketLines) {
@@ -251,10 +297,8 @@ public class Ticket {
             }
         }
 
-        // Obtener cantidad total de la categoría
         int totalQuantity = quantityByCategory.getOrDefault(product.getCategory(), 0);
 
-        // Solo aplicar descuento si hay ≥2 productos de esa categoría
         if (totalQuantity >= 2) {
             double discount = product.getCategory().getDiscount();
             return product.getBasePrice() * quantity * discount;
@@ -263,39 +307,25 @@ public class Ticket {
         return 0.0;
     }
 
-    /**
-     * Verifica si el ticket tiene productos
-     */
     public boolean hasProducts() {
         return ticketLines.stream().anyMatch(TicketLine::isProduct);
     }
 
-    /**
-     * Verifica si el ticket tiene servicios
-     */
     public boolean hasServices() {
         return ticketLines.stream().anyMatch(TicketLine::isService);
     }
 
-    /**
-     * Formatea el ticket para mostrar en comandos
-     */
-    /**
-     * Formatea el ticket para mostrar en comandos
-     */
     public String formatForDisplay() {
         StringBuilder sb = new StringBuilder();
 
-        // Usar displayId si existe, sino usar id
         String idToShow = (displayId != null && !displayId.equals(id)) ? displayId : id;
         sb.append("Ticket :  ").append(idToShow).append("\n");
 
-        // Si tiene servicios, mostrarlos primero
         if (hasServices()) {
             sb.append("Services Included:  \n");
             for (TicketLine line : ticketLines) {
                 if (line.isService()) {
-                    sb.append("  ").append(line.getService().toString()).append("\n");
+                    sb.append("  ").append(line.getServiceProduct().toString()).append("\n");
                 }
             }
         }
@@ -305,7 +335,6 @@ public class Ticket {
             sb.append("Product Included\n");
         }
 
-        // ---- Productos individuales ----
         if (hayProductos) {
             for (TicketLine line : ticketLines) {
                 if (line.isProduct()) {
@@ -329,7 +358,6 @@ public class Ticket {
                 }
             }
 
-            // --------- TOTALES y DESCUENTO EXTRA ----------
             double totalPrice = calculateTotalPrice();
             double totalDiscount = calculateTotalDiscount();
             double finalPrice = calculateFinalPrice();
@@ -342,7 +370,6 @@ public class Ticket {
             sb.append(String.format(java.util.Locale.US, "  Total discount: %.1f\n", totalDiscount));
             sb.append(String.format(java.util.Locale.US, "  Final Price: %.1f", finalPrice));
         } else if (!hasServices()) {
-            // Ticket vacío
             sb.append("  Total price: 0.0\n");
             sb.append("  Total discount: 0.0\n");
             sb.append("  Final Price: 0.0");
@@ -359,7 +386,6 @@ public class Ticket {
             return 0.0;
         }
 
-        // Agrupar productos por categoría
         Map<TCategory, Integer> quantityByCategory = new HashMap<>();
 
         for (TicketLine line : ticketLines) {
@@ -369,16 +395,12 @@ public class Ticket {
             }
         }
 
-        // Obtener cantidad total de la categoría
         int totalQuantity = quantityByCategory.getOrDefault(product.getCategory(), 0);
 
-        // Solo aplicar descuento si hay ≥2 productos de esa categoría
         if (totalQuantity >= 2) {
             double discount = product.getCategory().getDiscount();
 
-            // Para productos personalizados, calcular sobre el precio con personalizaciones
             if (product instanceof ProductPersonalized) {
-                // Buscar la línea correspondiente para obtener las personalizaciones
                 for (TicketLine line : ticketLines) {
                     if (line.isProduct() && line.getProduct().equals(product) && line.hasPersonalizations()) {
                         double surcharge = line.getPersonalizations().size() * product.getBasePrice() * 0.10;
@@ -394,35 +416,23 @@ public class Ticket {
         return 0.0;
     }
 
-    /**
-     * Cierra el ticket y añade timestamp al ID
-     */
-    /**
-     * Cierra el ticket, añade timestamp al ID y ordena productos alfabéticamente
-     */
-    /**
-     * Cierra el ticket, añade timestamp al displayId y ordena productos alfabéticamente
-     */
     public void closeTicket() {
         if (state == TicketState. CLOSE) {
-            return; // Ya está cerrado
+            return;
         }
 
         this.state = TicketState. CLOSE;
         this.closeDate = LocalDateTime.now();
 
-        // Crear displayId con timestamp:  212121 → 212121-26-01-13-12:00
         DateTimeFormatter formatter = DateTimeFormatter. ofPattern("yy-MM-dd-HH: mm");
         String timestamp = closeDate.format(formatter);
         this.displayId = id + "-" + timestamp;
 
-        // Ordenar productos alfabéticamente por nombre
         if (ticketLines != null && !ticketLines.isEmpty()) {
             ticketLines.sort((line1, line2) -> {
                 if (line1.isProduct() && line2.isProduct()) {
                     return line1.getProduct().getName().compareTo(line2.getProduct().getName());
                 }
-                // Servicios van primero
                 if (line1.isService() && line2.isProduct()) {
                     return -1;
                 }

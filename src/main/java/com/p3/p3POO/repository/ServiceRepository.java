@@ -1,6 +1,6 @@
 package com.p3.p3POO.repository;
 
-import com.p3.p3POO.model.service.Service;
+import com.p3.p3POO.model.service.ServiceProduct;
 import com.p3.p3POO.model.enums.ServiceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,20 +10,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ServiceRepository extends JpaRepository<Service, String> {
+public interface ServiceRepository extends JpaRepository<ServiceProduct, String> {
 
-    // Buscar servicios por tipo
-    List<Service> findByServiceType(ServiceType serviceType);
+    List<ServiceProduct> findByServiceType(ServiceType serviceType);
 
-    // Buscar servicios válidos para una fecha (maxUsageDate >= fecha)
-    List<Service> findByMaxUsageDateGreaterThanEqual(LocalDate date);
+    List<ServiceProduct> findByMaxUsageDateGreaterThanEqual(LocalDate date);
 
-    // Contar total de servicios (para generar IDs secuenciales:  1S, 2S, 3S...)
-    @Query("SELECT COUNT(s) FROM Service s")
+    @Query("SELECT COUNT(s) FROM ServiceProduct s")
     long countAll();
 
-    // Obtener todos ordenados por ID
-    List<Service> findAllByOrderByIdAsc();
+    List<ServiceProduct> findAllByOrderByIdAsc();
 }
 
 

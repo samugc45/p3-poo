@@ -1,10 +1,10 @@
 package com.p3.p3POO.service.impl;
 
-import com.p3.p3POO.model.service.Service;
+import com.p3.p3POO.model.service.ServiceProduct;
 import com.p3.p3POO.service.TicketService;
 import com.p3.p3POO.service.UserService;
 import com.p3.p3POO.service.ProductService;
-import com.p3.p3POO.service.ServiceService;
+import com.p3.p3POO.service.ServiceServiceProduct;
 import com.p3.p3POO.strategy.BasicTicketPrintStrategy;
 import com.p3.p3POO.strategy.DetailedTicketPrintStrategy;
 import com.p3.p3POO.model.Ticket;
@@ -17,28 +17,29 @@ import com.p3.p3POO.model.user.Cashier;
 import com.p3.p3POO.model.user.Client;
 import com.p3.p3POO.repository.TicketRepository;
 import com.p3.p3POO.exception.DomainException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@org.springframework.stereotype.Service
+@Service
 @Transactional
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserService userService;
     private final ProductService productService;
-    private final ServiceService serviceService;
+    private final ServiceServiceProduct serviceServiceProduct;
 
     private final BasicTicketPrintStrategy basicPrintStrategy;
     private final DetailedTicketPrintStrategy detailedPrintStrategy;
 
-    public TicketServiceImpl(TicketRepository ticketRepository,UserService userService,ProductService productService,ServiceService serviceService,BasicTicketPrintStrategy basicPrintStrategy, DetailedTicketPrintStrategy detailedPrintStrategy) {
+    public TicketServiceImpl(TicketRepository ticketRepository, UserService userService, ProductService productService, ServiceServiceProduct serviceServiceProduct, BasicTicketPrintStrategy basicPrintStrategy, DetailedTicketPrintStrategy detailedPrintStrategy) {
         this.ticketRepository = ticketRepository;
         this.userService = userService;
         this.productService = productService;
-        this.serviceService = serviceService;
+        this.serviceServiceProduct = serviceServiceProduct;
         this.basicPrintStrategy = basicPrintStrategy;
         this.detailedPrintStrategy = detailedPrintStrategy;
     }
@@ -161,9 +162,9 @@ public class TicketServiceImpl implements TicketService {
             throw new DomainException("Services can only be added to DETAILED tickets (company clients)");
         }
 
-        Service service = serviceService.findServiceById(serviceId);
+        ServiceProduct serviceProduct = serviceServiceProduct.findServiceById(serviceId);
 
-        TicketLine line = new TicketLine(ticket, service, quantity);
+        TicketLine line = new TicketLine(ticket, serviceProduct, quantity);
         ticket.addLine(line);
 
         ticketRepository.save(ticket);

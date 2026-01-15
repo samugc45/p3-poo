@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "meeting_products")
@@ -16,12 +15,10 @@ public class MeetingProduct extends Event {
 
     private static final int MIN_PLANNING_HOURS = 12;
 
-    // Constructor sin argumentos (JPA)
     public MeetingProduct() {
         super();
     }
 
-    // Constructor completo
     public MeetingProduct(String id, String name, Double basePrice, LocalDateTime eventDate, Integer maxParticipants) {
         super(id, name, basePrice, eventDate, maxParticipants);
     }

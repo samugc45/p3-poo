@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "customizable_products")
 public class CustomizableProduct {
@@ -37,6 +36,38 @@ public class CustomizableProduct {
         this.baseProduct = baseProduct;
         this.maxCustomTexts = maxCustomTexts;
         this.customTexts = new ArrayList<>();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BasicProduct getBaseProduct() {
+        return baseProduct;
+    }
+
+    public void setBaseProduct(BasicProduct baseProduct) {
+        this.baseProduct = baseProduct;
+    }
+
+    public List<String> getCustomTexts() {
+        return customTexts;
+    }
+
+    public void setCustomTexts(List<String> customTexts) {
+        this.customTexts = customTexts;
+    }
+
+    public Integer getMaxCustomTexts() {
+        return maxCustomTexts;
+    }
+
+    public void setMaxCustomTexts(Integer maxCustomTexts) {
+        this.maxCustomTexts = maxCustomTexts;
     }
 
     public void addCustomText(String text) {

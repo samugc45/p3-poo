@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "events")
@@ -36,6 +35,30 @@ public abstract class Event extends Product {
         this.eventDate = eventDate;
         this.maxParticipants = maxParticipants != null ? maxParticipants :  100;
         this.actualPeople = 0;
+    }
+
+    public LocalDateTime getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDateTime eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public Integer getMaxParticipants() {
+        return maxParticipants;
+    }
+
+    public void setMaxParticipants(Integer maxParticipants) {
+        this.maxParticipants = maxParticipants;
+    }
+
+    public Integer getActualPeople() {
+        return actualPeople;
+    }
+
+    public void setActualPeople(Integer actualPeople) {
+        this.actualPeople = actualPeople;
     }
 
     @Override

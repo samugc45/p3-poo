@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-@Data
 @Entity
 @Table(name = "products")
 @Inheritance(strategy = InheritanceType. JOINED)
@@ -30,6 +29,38 @@ public abstract class Product {
         this.id = id;
         this. name = name;
         this. basePrice = basePrice;
+        this.category = category;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(Double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public TCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(TCategory category) {
         this.category = category;
     }
 

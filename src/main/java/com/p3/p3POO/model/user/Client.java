@@ -3,13 +3,11 @@ package com.p3.p3POO.model.user;
 import com.p3.p3POO.model.Ticket;
 import com.p3.p3POO.model.enums.ClientType;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok. EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "clients")

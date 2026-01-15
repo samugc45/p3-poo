@@ -2,8 +2,9 @@ package com.p3.p3POO.command;
 
 import com.p3.p3POO.factory.TicketFactory;
 import com.p3.p3POO.model.product.*;
+import com.p3.p3POO.model.service.ServiceProduct;
 import com.p3.p3POO.service.ProductService;
-import com.p3.p3POO.service.ServiceService;
+import com.p3.p3POO.service.ServiceServiceProduct;
 import com.p3.p3POO.service.TicketService;
 import com.p3.p3POO.service.UserService;
 import com.p3.p3POO.strategy.BasicTicketPrintStrategy;
@@ -13,7 +14,6 @@ import com.p3.p3POO.model.Ticket;
 import com.p3.p3POO.model.enums.ServiceType;
 import com.p3.p3POO.model.enums.TCategory;
 import com.p3.p3POO.model.enums.TicketMode;
-import com.p3.p3POO.model.service.Service;
 import com.p3.p3POO.model.user.Cashier;
 import com.p3.p3POO.model.user.Client;
 import com.p3.p3POO.model.user.CompanyClient;
@@ -30,7 +30,7 @@ public class CommandExecutor {
 
     private final UserService userService;
     private final ProductService productService;
-    private final ServiceService serviceService;
+    private final ServiceServiceProduct serviceServiceProduct;
     private final TicketService ticketService;
     private final TicketFactory ticketFactory;
     private final EventValidator eventValidator;
@@ -39,7 +39,7 @@ public class CommandExecutor {
 
     public CommandExecutor(UserService userService,
                           ProductService productService,
-                          ServiceService serviceService,
+                          ServiceServiceProduct serviceServiceProduct,
                           TicketService ticketService,
                           TicketFactory ticketFactory,
                           EventValidator eventValidator,
@@ -47,7 +47,7 @@ public class CommandExecutor {
                           DetailedTicketPrintStrategy detailedPrintStrategy) {
         this.userService = userService;
         this.productService = productService;
-        this.serviceService = serviceService;
+        this.serviceServiceProduct = serviceServiceProduct;
         this. ticketService = ticketService;
         this.ticketFactory = ticketFactory;
         this. eventValidator = eventValidator;
@@ -424,8 +424,8 @@ public class CommandExecutor {
             LocalDate maxUsageDate = LocalDate.parse(dateStr);
             ServiceType serviceType = ServiceType.valueOf(serviceTypeStr.toUpperCase());
 
-            Service service = serviceService.createService(serviceType, maxUsageDate);
-            return service.toString() + "\nprod add: ok";
+            ServiceProduct serviceProduct = serviceServiceProduct.createService(serviceType, maxUsageDate);
+            return serviceProduct.toString() + "\nprod add: ok";
 
         } catch (IllegalArgumentException e) {
             return "Error: Invalid service type";
@@ -497,9 +497,9 @@ public class CommandExecutor {
 
     private String executeProdList(List<String> tokens) {
         List<Product> products = productService.findAllProducts();
-        List<Service> services = serviceService.findAllServices();
+        List<ServiceProduct> serviceProducts = serviceServiceProduct.findAllServices();
 
-        if (products.isEmpty() && services.isEmpty()) {
+        if (products.isEmpty() && serviceProducts.isEmpty()) {
             return "Catalog:\nprod list: ok";
         }
 
@@ -523,8 +523,8 @@ public class CommandExecutor {
         }
 
         // Añadir servicios
-        for (Service service : services) {
-            sb.append("  ").append(service.toString()).append("\n");
+        for (ServiceProduct serviceProduct : serviceProducts) {
+            sb.append("  ").append(serviceProduct.toString()).append("\n");
         }
 
         sb.append("prod list: ok");

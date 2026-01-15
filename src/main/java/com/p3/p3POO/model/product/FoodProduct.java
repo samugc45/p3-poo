@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "food_products")
@@ -19,15 +18,21 @@ public class FoodProduct extends Event {
     @Column(nullable = false)
     private LocalDate expirationDate;
 
-    // Constructor sin argumentos (JPA)
     public FoodProduct() {
         super();
     }
 
-    // Constructor completo
     public FoodProduct(String id, String name, Double basePrice, LocalDateTime eventDate,
                        Integer maxParticipants, LocalDate expirationDate) {
         super(id, name, basePrice, eventDate, maxParticipants);
+        this.expirationDate = expirationDate;
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 

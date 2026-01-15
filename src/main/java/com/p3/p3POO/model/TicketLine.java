@@ -2,14 +2,13 @@ package com.p3.p3POO.model;
 
 import com.p3.p3POO.model.product.Product;
 import com.p3.p3POO.model.product.ProductPersonalized;
-import com.p3.p3POO.model.service.Service;
+import com.p3.p3POO.model.service.ServiceProduct;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "ticket_lines")
 public class TicketLine {
@@ -29,7 +28,7 @@ public class TicketLine {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_id")
-    private Service service;
+    private ServiceProduct serviceProduct;
 
     @Column(nullable = false)
     private Integer quantity;  // Cantidad o número de personas (para eventos)
@@ -54,7 +53,7 @@ public class TicketLine {
     public TicketLine(Ticket ticket, Product product, Integer quantity) {
         this.ticket = ticket;
         this.product = product;
-        this.service = null;
+        this.serviceProduct = null;
         this.quantity = quantity;
         this.unitPrice = product.calculateFinalPrice();
         this.totalPrice = this.unitPrice * quantity;
@@ -65,7 +64,7 @@ public class TicketLine {
     public TicketLine(Ticket ticket, Product product, Integer quantity, List<String> personalizations) {
         this.ticket = ticket;
         this.product = product;
-        this.service = null;
+        this.serviceProduct = null;
         this.quantity = quantity;
         this.personalizations = personalizations != null ? new ArrayList<>(personalizations) : new ArrayList<>();
 
@@ -82,13 +81,69 @@ public class TicketLine {
     }
 
     // Constructor para SERVICIO (sin precio)
-    public TicketLine(Ticket ticket, Service service, Integer quantity) {
+    public TicketLine(Ticket ticket, ServiceProduct serviceProduct, Integer quantity) {
         this.ticket = ticket;
         this.product = null;
-        this.service = service;
+        this.serviceProduct = serviceProduct;
         this.quantity = quantity;
         this.unitPrice = null;  // Los servicios NO tienen precio al agregarlos
         this.totalPrice = null;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Ticket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public ServiceProduct getServiceProduct() {
+        return serviceProduct;
+    }
+
+    public void setServiceProduct(ServiceProduct serviceProduct) {
+        this.serviceProduct = serviceProduct;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(Double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public List<String> getPersonalizations() {
@@ -110,7 +165,7 @@ public class TicketLine {
 
     // Verificar si la línea es un servicio
     public boolean isService() {
-        return service != null;
+        return serviceProduct != null;
     }
 
     // Obtener nombre del item (producto o servicio)
@@ -118,7 +173,7 @@ public class TicketLine {
         if (isProduct()) {
             return product.getName();
         } else if (isService()) {
-            return "Service " + service.getId() + " (" + service.getServiceType() + ")";
+            return "Service " + serviceProduct.getId() + " (" + serviceProduct.getServiceType() + ")";
         }
         return "Unknown";
     }

@@ -9,11 +9,6 @@ public class CommandParser {
 
     public static List<String> parse(String commandLine) {
         List<String> tokens = new ArrayList<>();
-
-        // Regex para capturar:
-        // - Palabras sin comillas
-        // - Frases entre comillas dobles
-        // - Flags (--pred, -s, etc.)
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|--p(\\w+)|-(\\w+)|(\\S+)");
         Matcher matcher = pattern.matcher(commandLine);
 
@@ -35,10 +30,6 @@ public class CommandParser {
         return tokens;
     }
 
-    /**
-     * Extrae flags de personalización de una lista de tokens
-     * Ejemplo:  ["--pred", "--pblue"] → ["red", "blue"]
-     */
     public static List<String> extractPersonalizationFlags(List<String> tokens) {
         List<String> personalizations = new ArrayList<>();
 
@@ -51,22 +42,15 @@ public class CommandParser {
         return personalizations;
     }
 
-    /**
-     * Extrae el flag de modo de ticket (-c, -p, -s)
-     * Por defecto retorna "-p" si no hay flag
-     */
     public static String extractTicketModeFlag(List<String> tokens) {
         for (String token : tokens) {
             if (token.equals("-c") || token.equals("-p") || token.equals("-s")) {
                 return token;
             }
         }
-        return "-p"; // Default
+        return "-p";
     }
 
-    /**
-     * Verifica si un token es un número
-     */
     public static boolean isNumeric(String str) {
         if (str == null || str.isEmpty()) {
             return false;

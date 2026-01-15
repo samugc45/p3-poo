@@ -11,18 +11,13 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
 
-    // Buscar productos por categoría
     List<Product> findByCategory(TCategory category);
 
-    // Buscar productos por nombre (contiene, ignorando mayúsculas)
     List<Product> findByNameContainingIgnoreCase(String name);
 
-    // Buscar producto por nombre exacto
     Optional<Product> findByName(String name);
 
-    // Verificar si existe un producto con ese ID
     boolean existsById(String id);
 
-    // Obtener todos los productos ordenados por nombre
     List<Product> findAllByOrderByNameAsc();
 }

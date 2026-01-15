@@ -15,9 +15,6 @@ public class EventValidator {
     private static final int MIN_MEETING_HOURS = 12;
     private static final int MIN_FOOD_DAYS = 3;
 
-    /**
-     * Valida que un Meeting pueda crearse con al menos 12 horas de antelación
-     */
     public void validateMeetingCreation(LocalDateTime eventDate) {
         LocalDateTime now = LocalDateTime.now();
         long hoursBetween = ChronoUnit.HOURS.between(now, eventDate);
@@ -30,10 +27,6 @@ public class EventValidator {
         }
     }
 
-    /**
-     * Valida que un FoodProduct pueda crearse con al menos 3 días de antelación
-     * y que no haya caducado
-     */
     public void validateFoodCreation(LocalDateTime eventDate, LocalDate expirationDate) {
         LocalDate now = LocalDate.now();
         LocalDate eventDay = eventDate.toLocalDate();
@@ -50,18 +43,12 @@ public class EventValidator {
         }
     }
 
-    /**
-     * Valida que un Meeting pueda agregarse a un ticket en una fecha determinada
-     */
     public void validateMeetingForTicket(MeetingProduct meeting, LocalDate currentDate) {
         if (!meeting.isValidForDate(currentDate)) {
             throw new DomainException(String.format("Meeting event %s is not valid for date %s (requires 12h advance)", meeting.getId(), currentDate));
         }
     }
 
-    /**
-     * Valida que un FoodProduct pueda agregarse a un ticket en una fecha determinada
-     */
     public void validateFoodForTicket(FoodProduct food, LocalDate currentDate) {
         if (!food.isValidForDate(currentDate)) {
             throw new DomainException(String.format("Food event %s is not valid for date %s (requires 3 days advance and not expired)", food. getId(), currentDate));

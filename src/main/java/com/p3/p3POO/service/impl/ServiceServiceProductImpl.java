@@ -1,37 +1,38 @@
 package com.p3.p3POO.service.impl;
 
-import com.p3.p3POO.model.service.Service;
-import com.p3.p3POO.service.ServiceService;
+import com.p3.p3POO.model.service.ServiceProduct;
+import com.p3.p3POO.service.ServiceServiceProduct;
 import com.p3.p3POO.model.enums.ServiceType;
 import com.p3.p3POO.repository.ServiceRepository;
 import com.p3.p3POO.exception.DomainException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@org.springframework.stereotype.Service
+@Service
 @Transactional
-public class ServiceServiceImpl implements ServiceService {
+public class ServiceServiceProductImpl implements ServiceServiceProduct {
 
     private final ServiceRepository serviceRepository;
 
-    public ServiceServiceImpl(ServiceRepository serviceRepository) {
+    public ServiceServiceProductImpl(ServiceRepository serviceRepository) {
         this.serviceRepository = serviceRepository;
     }
 
     @Override
-    public Service createService(ServiceType serviceType, LocalDate maxUsageDate) {
+    public ServiceProduct createService(ServiceType serviceType, LocalDate maxUsageDate) {
         String id = generateNextServiceId();
-        Service service = new Service(id, serviceType, maxUsageDate);
-        return serviceRepository.save(service);
+        ServiceProduct serviceProduct = new ServiceProduct(id, serviceType, maxUsageDate);
+        return serviceRepository.save(serviceProduct);
     }
 
     private String generateNextServiceId() {
-        List<Service> services = serviceRepository.findAll();
+        List<ServiceProduct> serviceProducts = serviceRepository.findAll();
         int maxId = 0;
 
-        for (Service s : services) {
+        for (ServiceProduct s : serviceProducts) {
             try {
                 // ID formato: 1S, 2S, 3S...
                 String idStr = s.getId().replace("S", "");
@@ -49,19 +50,19 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     @Transactional(readOnly = true)
-    public Service findServiceById(String id) {
+    public ServiceProduct findServiceById(String id) {
         return serviceRepository.findById(id).orElseThrow(() -> new DomainException("Service not found: " + id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Service> findAllServices() {
+    public List<ServiceProduct> findAllServices() {
         return serviceRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Service> findServicesByType(ServiceType type) {
+    public List<ServiceProduct> findServicesByType(ServiceType type) {
         return serviceRepository.findByServiceType(type);
     }
 

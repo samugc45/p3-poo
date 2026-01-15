@@ -54,8 +54,8 @@ public class DetailedTicketPrintStrategy implements TicketPrintStrategy {
         for (TicketLine line : ticket.getTicketLines()) {
             if (line.isService()) {
                 sb.append(serviceNum).append(". Service ")
-                        .append(line. getService().getId())
-                        .append(" (").append(line.getService().getServiceType()).append(")")
+                        .append(line.getServiceProduct().getId())
+                        .append(" (").append(line.getServiceProduct().getServiceType()).append(")")
                         .append(" x").append(line.getQuantity()).append("\n");
                 serviceNum++;
             }

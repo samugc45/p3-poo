@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "basic_products")

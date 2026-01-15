@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "personalized_products")
@@ -34,6 +33,22 @@ public class ProductPersonalized extends Product {
         super(id, name, basePrice, category);
         this.maxPersonalizations = maxPersonalizations;
         this.personalizationList = new ArrayList<>();
+    }
+
+    public Integer getMaxPersonalizations() {
+        return maxPersonalizations;
+    }
+
+    public void setMaxPersonalizations(Integer maxPersonalizations) {
+        this.maxPersonalizations = maxPersonalizations;
+    }
+
+    public List<String> getPersonalizationList() {
+        return personalizationList;
+    }
+
+    public void setPersonalizationList(List<String> personalizationList) {
+        this.personalizationList = personalizationList;
     }
 
     public void addPersonalization(String text) {
