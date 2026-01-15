@@ -2,14 +2,12 @@ package com.p3.p3POO.model.product;
 
 import com.p3.p3POO.model.enums.TCategory;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "personalized_products")
 public class ProductPersonalized extends Product {
@@ -33,6 +31,18 @@ public class ProductPersonalized extends Product {
         super(id, name, basePrice, category);
         this.maxPersonalizations = maxPersonalizations;
         this.personalizationList = new ArrayList<>();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductPersonalized that = (ProductPersonalized) o;
+        return Objects.equals(maxPersonalizations, that.maxPersonalizations) && Objects.equals(personalizationList, that.personalizationList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(maxPersonalizations, personalizationList);
     }
 
     public Integer getMaxPersonalizations() {

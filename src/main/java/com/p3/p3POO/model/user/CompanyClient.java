@@ -1,9 +1,9 @@
 package com.p3.p3POO.model.user;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
+import java.util.Objects;
+
 @Entity
 @Table(name = "company_clients")
 public class CompanyClient extends Client {
@@ -38,6 +38,18 @@ public class CompanyClient extends Client {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CompanyClient that = (CompanyClient) o;
+        return Objects.equals(nif, that.nif) && Objects.equals(companyName, that.companyName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nif, companyName);
     }
 
     public static boolean isValidNIF(String nif) {

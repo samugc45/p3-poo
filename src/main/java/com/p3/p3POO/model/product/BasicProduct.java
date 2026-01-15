@@ -2,12 +2,9 @@ package com.p3.p3POO.model.product;
 
 import com.p3.p3POO.model.enums.TCategory;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "basic_products")
 public class BasicProduct extends Product {

@@ -2,7 +2,6 @@ package com.p3.p3POO.model.product;
 
 import com.p3.p3POO.model.enums.TCategory;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

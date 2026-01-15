@@ -10,7 +10,6 @@ import com.p3.p3POO.model.product.ProductPersonalized;
 import com.p3.p3POO.model.user.Cashier;
 import com.p3.p3POO.model.user.Client;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

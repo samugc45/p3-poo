@@ -2,7 +2,6 @@ package com.p3.p3POO.model.service;
 
 import com.p3.p3POO.model.enums.ServiceType;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDate;
 

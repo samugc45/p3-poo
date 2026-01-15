@@ -13,14 +13,12 @@ public class Cashier extends User {
     @Column(nullable = false, unique = true, length = 9)
     private String employeeCode;
 
-    // Constructor vacío (requerido por JPA)
     protected Cashier() {
         super();
     }
 
     // Constructor con parámetros
     public Cashier(String employeeCode, String name, String email) {
-        // Llamar al constructor de User pasando employeeCode como ID
         super();
         this.id = employeeCode;
         this.name = name;
@@ -29,12 +27,11 @@ public class Cashier extends User {
         this.employeeCode = employeeCode;
     }
 
-    // Getter
+
     public String getEmployeeCode() {
         return employeeCode;
     }
 
-    // Setter (si es necesario)
     public void setEmployeeCode(String employeeCode) {
         this.employeeCode = employeeCode;
     }

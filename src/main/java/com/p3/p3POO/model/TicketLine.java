@@ -4,7 +4,6 @@ import com.p3.p3POO.model.product.Product;
 import com.p3.p3POO.model.product.ProductPersonalized;
 import com.p3.p3POO.model.service.ServiceProduct;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;

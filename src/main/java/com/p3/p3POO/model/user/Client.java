@@ -3,18 +3,17 @@ package com.p3.p3POO.model.user;
 import com.p3.p3POO.model.Ticket;
 import com.p3.p3POO.model.enums.ClientType;
 import jakarta.persistence.*;
-import lombok. EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "clients")
 public class Client extends User {
 
     @Column(nullable = false, unique = true, length = 9)
-    private String dni;  // DNI es el ID único del cliente
+    private String dni;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -41,6 +40,50 @@ public class Client extends User {
         this.clientType = ClientType.NORMAL;
         this.registeredBy = registeredBy;
         this.tickets = new ArrayList<>();
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public ClientType getClientType() {
+        return clientType;
+    }
+
+    public void setClientType(ClientType clientType) {
+        this.clientType = clientType;
+    }
+
+    public Cashier getRegisteredBy() {
+        return registeredBy;
+    }
+
+    public void setRegisteredBy(Cashier registeredBy) {
+        this.registeredBy = registeredBy;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(dni, client.dni) && clientType == client.clientType && Objects.equals(registeredBy, client.registeredBy) && Objects.equals(tickets, client.tickets);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dni, clientType, registeredBy, tickets);
     }
 
     // Método para añadir ticket
