@@ -369,16 +369,15 @@ public class Ticket {
             sb.append(String.format(java.util.Locale.US, "  Total price: %.1f\n", totalPrice));
             if (mode == TicketMode.DETAILED && hasServices() && hasProducts()) {
                 double extraDiscount = totalPrice * 0.30;
-                sb.append(String.format(java.util.Locale.US, "  Extra Discount from services:%.1f **discount -%.1f\n", extraDiscount, extraDiscount));
+                sb.append(String. format(java.util.Locale.US, "  Extra Discount from services:%.1f **discount -%.1f\n", extraDiscount, extraDiscount));
             }
-            sb.append(String.format(java.util.Locale.US, "  Total discount: %.1f\n", totalDiscount));
-            sb.append(String.format(java.util.Locale.US, "  Final Price: %.1f", finalPrice));
-        } else if (!hasServices()) {
+            sb.append(String. format(java.util.Locale.US, "  Total discount: %.1f\n", totalDiscount));
+            sb.append(String.format(java.util. Locale.US, "  Final Price: %.1f", finalPrice));
+        } else if (mode == TicketMode. BASIC) {
             sb.append("  Total price: 0.0\n");
             sb.append("  Total discount: 0.0\n");
             sb.append("  Final Price: 0.0");
         }
-
         return sb.toString();
     }
 
