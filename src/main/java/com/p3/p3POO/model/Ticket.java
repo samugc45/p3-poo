@@ -382,40 +382,6 @@ public class Ticket {
         return sb.toString();
     }
 
-   /* private double calculateUnitDiscount(Product product) {
-        if (product.getCategory() == null) {
-            return 0.0;
-        }
-
-        Map<TCategory, Integer> quantityByCategory = new HashMap<>();
-
-        for (TicketLine line : ticketLines) {
-            if (line.isProduct() && line.getProduct() != null && line.getProduct().getCategory() != null) {
-                TCategory category = line.getProduct().getCategory();
-                quantityByCategory.put(category, quantityByCategory.getOrDefault(category, 0) + line.getQuantity());
-            }
-        }
-
-        int totalQuantity = quantityByCategory.getOrDefault(product.getCategory(), 0);
-
-        if (totalQuantity >= 2) {
-            double discount = product.getCategory().getDiscount();
-
-            if (product instanceof ProductPersonalized) {
-                for (TicketLine line : ticketLines) {
-                    if (line.isProduct() && line.getProduct().equals(product) && line.hasPersonalizations()) {
-                        double surcharge = line.getPersonalizations().size() * product.getBasePrice() * 0.10;
-                        double priceWithPersonalizations = product.getBasePrice() + surcharge;
-                        return priceWithPersonalizations * discount;
-                    }
-                }
-            }
-
-            return product.getBasePrice() * discount;
-        }
-
-        return 0.0;
-    }*/
 
     private double calculateUnitDiscount(Product product, TicketLine currentLine) {
         if (product.getCategory() == null) {
