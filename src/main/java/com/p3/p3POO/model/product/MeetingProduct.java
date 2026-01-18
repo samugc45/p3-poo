@@ -37,6 +37,11 @@ public class MeetingProduct extends Event {
 
     @Override
     public String toString() {
-        return String.format(java.util.Locale.US, "{class: Meeting, id:%s, name:'%s', price: %.1f, date of Event:%s, max people allowed:%d}", id, name, basePrice, eventDate. toLocalDate(), maxParticipants);
+        if (actualPeople > 0) {
+            double totalPrice = basePrice * actualPeople;
+            return String.format(java.util. Locale.US, "{class:Meeting, id:%s, name:'%s', price: %.1f, date of Event:%s, max people allowed:%d, actual people in event:%d}", id, name, totalPrice, eventDate.toLocalDate(), maxParticipants, actualPeople);
+        } else {
+            return String.format(java.util.Locale.US, "{class:  Meeting, id:%s, name:'%s', price:  %.1f, date of Event:%s, max people allowed:%d}", id, name, basePrice, eventDate.toLocalDate(), maxParticipants);
+        }
     }
 }

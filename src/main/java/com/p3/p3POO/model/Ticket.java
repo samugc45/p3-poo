@@ -210,9 +210,9 @@ public class Ticket {
 
     public static String generateId() {
         LocalDateTime now = LocalDateTime.now();
-        String timestamp = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        int random = (int) (Math.random() * 10000);
-        return "TK" + timestamp + String.format("%04d", random);
+        String timestamp = now.format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
+        int random = (int) (Math.random() * 100000);
+        return timestamp + "-" + String.format("%05d", random);
     }
 
     public Double calculateTotalPrice() {
@@ -220,7 +220,17 @@ public class Ticket {
 
         for (TicketLine line : ticketLines) {
             if (line.isProduct() && line.getProduct() != null) {
-                total += line.getProduct().getBasePrice() * line.getQuantity();
+                Product product = line.getProduct();
+
+                // Si tiene personalizaciones, calcular precio con personalizaciones
+                if (product instanceof ProductPersonalized && line.hasPersonalizations()) {
+                    ProductPersonalized pp = (ProductPersonalized) product;
+                    double surcharge = line.getPersonalizations().size() * pp.getBasePrice() * 0.10;
+                    double priceWithPersonalizations = pp.getBasePrice() + surcharge;
+                    total += priceWithPersonalizations * line.getQuantity();
+                } else {
+                    total += product.getBasePrice() * line.getQuantity();
+                }
             }
         }
 
@@ -334,7 +344,7 @@ public class Ticket {
                 if (line.isProduct()) {
                     Product product = line.getProduct();
 
-                    double unitDiscount = calculateUnitDiscount(product);
+                    double unitDiscount = calculateUnitDiscount(product,line);
 
                     for (int i = 0; i < line.getQuantity(); i++) {
                         sb.append("  ");
@@ -345,7 +355,7 @@ public class Ticket {
                             sb.append(product.toString());
                         }
                         if (unitDiscount > 0) {
-                            sb.append(String.format(java.util.Locale.US, " **discount -%.1f", unitDiscount));
+                            sb.append(String.format(java.util.Locale.US, " **discount -%.3f", unitDiscount));
                         }
                         sb.append("\n");
                     }
@@ -372,7 +382,7 @@ public class Ticket {
         return sb.toString();
     }
 
-    private double calculateUnitDiscount(Product product) {
+   /* private double calculateUnitDiscount(Product product) {
         if (product.getCategory() == null) {
             return 0.0;
         }
@@ -399,6 +409,37 @@ public class Ticket {
                         return priceWithPersonalizations * discount;
                     }
                 }
+            }
+
+            return product.getBasePrice() * discount;
+        }
+
+        return 0.0;
+    }*/
+
+    private double calculateUnitDiscount(Product product, TicketLine currentLine) {
+        if (product.getCategory() == null) {
+            return 0.0;
+        }
+
+        Map<TCategory, Integer> quantityByCategory = new HashMap<>();
+
+        for (TicketLine line : ticketLines) {
+            if (line.isProduct() && line.getProduct() != null && line.getProduct().getCategory() != null) {
+                TCategory category = line.getProduct().getCategory();
+                quantityByCategory.put(category, quantityByCategory.getOrDefault(category, 0) + line.getQuantity());
+            }
+        }
+
+        int totalQuantity = quantityByCategory.getOrDefault(product.getCategory(), 0);
+
+        if (totalQuantity >= 2) {
+            double discount = product. getCategory().getDiscount();
+
+            if (product instanceof ProductPersonalized && currentLine. hasPersonalizations()) {
+                double surcharge = currentLine.getPersonalizations().size() * product.getBasePrice() * 0.10;
+                double priceWithPersonalizations = product.getBasePrice() + surcharge;
+                return priceWithPersonalizations * discount;
             }
 
             return product.getBasePrice() * discount;
