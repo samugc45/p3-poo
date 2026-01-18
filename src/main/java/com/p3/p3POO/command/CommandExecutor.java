@@ -9,7 +9,6 @@ import com.p3.p3POO.service.TicketService;
 import com.p3.p3POO.service.UserService;
 import com.p3.p3POO.strategy.BasicTicketPrintStrategy;
 import com.p3.p3POO.strategy.DetailedTicketPrintStrategy;
-import com.p3.p3POO.validator.EventValidator;
 import com.p3.p3POO.model.Ticket;
 import com.p3.p3POO.model.enums.ServiceType;
 import com.p3.p3POO.model.enums.TCategory;
@@ -33,7 +32,6 @@ public class CommandExecutor {
     private final ServiceServiceProduct serviceServiceProduct;
     private final TicketService ticketService;
     private final TicketFactory ticketFactory;
-    private final EventValidator eventValidator;
     private final BasicTicketPrintStrategy basicPrintStrategy;
     private final DetailedTicketPrintStrategy detailedPrintStrategy;
 
@@ -42,7 +40,6 @@ public class CommandExecutor {
                           ServiceServiceProduct serviceServiceProduct,
                           TicketService ticketService,
                           TicketFactory ticketFactory,
-                          EventValidator eventValidator,
                           BasicTicketPrintStrategy basicPrintStrategy,
                           DetailedTicketPrintStrategy detailedPrintStrategy) {
         this.userService = userService;
@@ -50,7 +47,6 @@ public class CommandExecutor {
         this.serviceServiceProduct = serviceServiceProduct;
         this. ticketService = ticketService;
         this.ticketFactory = ticketFactory;
-        this. eventValidator = eventValidator;
         this.basicPrintStrategy = basicPrintStrategy;
         this. detailedPrintStrategy = detailedPrintStrategy;
     }
