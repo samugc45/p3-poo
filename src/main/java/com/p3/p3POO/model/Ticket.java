@@ -222,7 +222,6 @@ public class Ticket {
             if (line.isProduct() && line.getProduct() != null) {
                 Product product = line.getProduct();
 
-                // Si tiene personalizaciones, calcular precio con personalizaciones
                 if (product instanceof ProductPersonalized && line.hasPersonalizations()) {
                     ProductPersonalized pp = (ProductPersonalized) product;
                     double surcharge = line.getPersonalizations().size() * pp.getBasePrice() * 0.10;
@@ -268,7 +267,7 @@ public class Ticket {
 
                 if (product.getCategory() != null) {
                     List<TicketLine> categoryLines = productsByCategory.get(product.getCategory());
-                    int totalQuantity = categoryLines. stream().mapToInt(TicketLine:: getQuantity).sum();
+                    int totalQuantity = categoryLines.stream().mapToInt(TicketLine:: getQuantity).sum();
 
                     if (totalQuantity >= 2) {
                         double discount = product.getCategory().getDiscount();
@@ -369,11 +368,11 @@ public class Ticket {
             sb.append(String.format(java.util.Locale.US, "  Total price: %.1f\n", totalPrice));
             if (mode == TicketMode.DETAILED && hasServices() && hasProducts()) {
                 double extraDiscount = totalPrice * 0.30;
-                sb.append(String. format(java.util.Locale.US, "  Extra Discount from services:%.1f **discount -%.1f\n", extraDiscount, extraDiscount));
+                sb.append(String.format(java.util.Locale.US, "  Extra Discount from services:%.1f **discount -%.1f\n", extraDiscount, extraDiscount));
             }
-            sb.append(String. format(java.util.Locale.US, "  Total discount: %.1f\n", totalDiscount));
-            sb.append(String.format(java.util. Locale.US, "  Final Price: %.1f", finalPrice));
-        } else if (mode == TicketMode. BASIC) {
+            sb.append(String.format(java.util.Locale.US, "  Total discount: %.1f\n", totalDiscount));
+            sb.append(String.format(java.util.Locale.US, "  Final Price: %.1f", finalPrice));
+        } else if (mode == TicketMode.BASIC) {
             sb.append("  Total price: 0.0\n");
             sb.append("  Total discount: 0.0\n");
             sb.append("  Final Price: 0.0");

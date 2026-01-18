@@ -26,16 +26,14 @@ public class Client extends User {
     @OneToMany(mappedBy = "client", cascade = CascadeType. ALL, orphanRemoval = true)
     private List<Ticket> tickets;
 
-    // Constructor sin argumentos (JPA)
     public Client() {
         super();
         this.clientType = ClientType.NORMAL;
         this.tickets = new ArrayList<>();
     }
 
-    // Constructor completo
     public Client(String dni, String name, String email, Cashier registeredBy) {
-        super(dni, name, email);  // El ID es el DNI
+        super(dni, name, email);
         this.dni = dni;
         this.clientType = ClientType.NORMAL;
         this.registeredBy = registeredBy;
@@ -86,7 +84,6 @@ public class Client extends User {
         return Objects.hash(dni, clientType, registeredBy, tickets);
     }
 
-    // Método para añadir ticket
     public void addTicket(Ticket ticket) {
         this.tickets.add(ticket);
         ticket.setClient(this);

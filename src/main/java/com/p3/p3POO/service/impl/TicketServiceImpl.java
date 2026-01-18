@@ -143,15 +143,12 @@ public class TicketServiceImpl implements TicketService {
 
         Product product = productService.findProductById(productId);
 
-        // Si es un Event (Meeting, Food, etc.), establecer actualPeople
         if (product instanceof Event) {
             Event event = (Event) product;
             event.setActualPeople(quantity);
-            // Para Events, la cantidad en la línea es 1 (es un solo evento con X personas)
             TicketLine line = new TicketLine(ticket, event, 1);
             ticket.addLine(line);
         } else {
-            // Para productos normales, usar la cantidad tal cual
             TicketLine line = new TicketLine(ticket, product, quantity);
             ticket.addLine(line);
         }

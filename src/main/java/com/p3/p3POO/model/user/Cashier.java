@@ -17,7 +17,6 @@ public class Cashier extends User {
         super();
     }
 
-    // Constructor con parámetros
     public Cashier(String employeeCode, String name, String email) {
         super();
         this.id = employeeCode;

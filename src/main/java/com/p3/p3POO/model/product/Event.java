@@ -27,7 +27,7 @@ public abstract class Event extends Product {
     }
 
     protected Event(String id, String name, Double basePrice, LocalDateTime eventDate, Integer maxParticipants) {
-        super(id, name, basePrice, null);  // Events NO tienen categoría
+        super(id, name, basePrice, null);
         this.eventDate = eventDate;
         this.maxParticipants = maxParticipants != null ? maxParticipants :  100;
         this.actualPeople = 0;

@@ -20,12 +20,10 @@ public abstract class User {
     @Column(nullable = false)
     protected LocalDate registrationDate;
 
-    // Constructor sin argumentos (requerido por JPA)
     protected User() {
         this.registrationDate = LocalDate.now();
     }
 
-    // Constructor con parámetros
     protected User(String id, String name, String email) {
         this.id = id;
         this.name = name;
