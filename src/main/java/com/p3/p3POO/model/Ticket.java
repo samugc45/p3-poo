@@ -372,9 +372,6 @@ public class Ticket {
         return sb.toString();
     }
 
-    /**
-     * Calcula el descuento UNITARIO de un producto (considerando personalizaciones)
-     */
     private double calculateUnitDiscount(Product product) {
         if (product.getCategory() == null) {
             return 0.0;
