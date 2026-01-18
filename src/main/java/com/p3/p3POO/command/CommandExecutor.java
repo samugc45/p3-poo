@@ -55,15 +55,11 @@ public class CommandExecutor {
         this. detailedPrintStrategy = detailedPrintStrategy;
     }
 
-    /**
-     * Ejecuta un comando y retorna el resultado
-     */
     public String execute(String commandLine) {
         if (commandLine == null || commandLine.trim().isEmpty()) {
             return "";
         }
 
-        // Parsear la línea de comando
         List<String> tokens = CommandParser.parse(commandLine.trim());
 
         if (tokens.isEmpty()) {
@@ -100,8 +96,6 @@ public class CommandExecutor {
         }
     }
 
-    // ==================== COMANDO ECHO ====================
-
     private String executeEcho(List<String> tokens) {
         // Formato: echo "texto"
         if (tokens.size() < 2) {
@@ -110,8 +104,6 @@ public class CommandExecutor {
 
         return "\"" + tokens.get(1) + "\"";
     }
-
-    // ==================== COMANDO CASH ====================
 
     private String executeCash(List<String> tokens) {
         if (tokens.size() < 2) {
@@ -134,20 +126,15 @@ public class CommandExecutor {
         }
     }
     private String executeCashAdd(List<String> tokens) {
-        // Formato 1: cash add <id> "<nombre>" <email>
-        // Formato 2: cash add "<nombre>" <email>  (ID autogenerado)
-
         String id = null;
         String name;
         String email;
 
         if (tokens.size() == 5) {
-            // Formato 1: con ID
             id = tokens.get(2);
             name = tokens.get(3);
             email = tokens. get(4);
         } else if (tokens.size() == 4) {
-            // Formato 2: sin ID (autogenerado)
             name = tokens.get(2);
             email = tokens.get(3);
         } else {
@@ -181,7 +168,6 @@ public class CommandExecutor {
         StringBuilder sb = new StringBuilder();
         sb.append("Cash:\n");
 
-        // Ordenar por ID
         cashiers.sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
 
         for (Cashier cashier : cashiers) {
@@ -193,7 +179,6 @@ public class CommandExecutor {
     }
 
     private String executeCashRemove(List<String> tokens) {
-        // Formato:  cash remove <id>
         if (tokens.size() < 3) {
             return "Usage:  cash remove <id>";
         }
@@ -209,7 +194,6 @@ public class CommandExecutor {
     }
 
     private String executeCashTickets(List<String> tokens) {
-        // Formato: cash tickets <id>
         if (tokens.size() < 3) {
             return "Usage: cash tickets <id>";
         }
@@ -241,8 +225,6 @@ public class CommandExecutor {
         }
     }
 
-    // ==================== COMANDOS CLIENT ====================
-
     private String executeClient(List<String> tokens) {
         if (tokens.size() < 2) {
             return "Usage:  client add|list|remove [args]";
@@ -263,10 +245,6 @@ public class CommandExecutor {
     }
 
     private String executeClientAdd(List<String> tokens) {
-        // Formato:  client add "<nombre>" (<DNI>|<NIF>) <email> <cashId>
-        // DNI/NIE: 8 dígitos + letra (ej: 55630667S, Y8682724P)
-        // NIF: letra + 8 dígitos (ej:  B12345674)
-
         if (tokens.size() < 6) {
             return "Usage: client add \"<nombre>\" (<DNI>|<NIF>) <email> <cashId>";
         }
@@ -277,15 +255,10 @@ public class CommandExecutor {
         String cashId = tokens.get(5);
 
         try {
-            // Detectar si es NIF (letra + 8 dígitos, sin letra al final)
-            // Formato NIF: B12345674
             if (identifier.matches("^[A-Z]\\d{8}$")) {
-                // Es un NIF (CompanyClient)
                 CompanyClient companyClient = userService.createCompanyClient(identifier, name, email, cashId);
                 return companyClient.toString() + "\nclient add: ok";
             } else {
-                // Es un DNI/NIE (Client normal)
-                // Formatos: 12345678A, Y8682724P, X1234567Z
                 Client client = userService.createClient(identifier, name, email, cashId);
                 return client.toString() + "\nclient add: ok";
             }
@@ -316,7 +289,6 @@ public class CommandExecutor {
     }
 
     private String executeClientRemove(List<String> tokens) {
-        //client remove <DNI>
         if (tokens.size() < 3) {
             return "Usage:  client remove <DNI>";
         }
@@ -330,8 +302,6 @@ public class CommandExecutor {
             return "Error: " + e.getMessage();
         }
     }
-
-    // ==================== COMANDOS PROD ====================
 
     private String executeProd(List<String> tokens) {
         if (tokens.size() < 2) {
@@ -360,14 +330,10 @@ public class CommandExecutor {
 
     private String executeProdAdd(List<String> tokens) {
         try {
-            // CASO 1: prod add <fecha> <SERVICIO>
-            // Ejemplo: prod add 2025-12-21 INSURANCE
             if (tokens.size() == 4 && tokens.get(2).matches("\\d{4}-\\d{2}-\\d{2}")) {
                 return executeProdAddService(tokens);
             }
 
-            // CASO 2: prod add <id> "<name>" <category> <price> <maxPersonalizations>
-            // Ejemplo: prod add 5 "Camiseta talla: M UPM" CLOTHES 15 3
             if (tokens.size() == 7) {
                 String id = tokens.get(2);
                 String name = tokens.get(3);
@@ -380,7 +346,6 @@ public class CommandExecutor {
                 return product.toString() + "\nprod add:  ok";
             }
 
-            // CASO 3: prod add <id> "<name>" <category> <price>
             if (tokens.size() == 6) {
                 String id = tokens.get(2);
                 String name = tokens.get(3);
@@ -392,14 +357,13 @@ public class CommandExecutor {
                 return product.toString() + "\nprod add: ok";
             }
 
-            // CASO 4: prod add "<name>" <category> <price>
             if (tokens.size() == 5) {
                 String name = tokens.get(2);
                 String categoryStr = tokens.get(3);
                 double price = Double.parseDouble(tokens.get(4));
 
                 TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
-                String id = "0"; // ID por defecto
+                String id = "0";
                 BasicProduct product = productService.createBasicProduct(id, name, price, category);
                 return product.toString() + "\nprod add: ok";
             }
@@ -414,8 +378,6 @@ public class CommandExecutor {
     }
 
     private String executeProdAddService(List<String> tokens) {
-        // Formato: prod add <fecha> <SERVICIO>
-        // Ejemplo: prod add 2025-12-21 INSURANCE
 
         try {
             String dateStr = tokens.get(2);
@@ -435,9 +397,6 @@ public class CommandExecutor {
     }
 
     private String executeProdAddMeeting(List<String> tokens) {
-        // Formato: prod addMeeting <id> "<name>" <price> <date> <maxPeople>
-        // Ejemplo: prod addMeeting 23456 "Reunion Rotonda" 12 2025-12-21 100
-
         try {
             if (tokens.size() < 7) {
                 return "Usage:  prod addMeeting <id> \"<name>\" <price> <date: yyyy-MM-dd> <maxPeople>";
@@ -449,7 +408,6 @@ public class CommandExecutor {
             String dateStr = tokens.get(5);
             int maxPeople = Integer.parseInt(tokens.get(6));
 
-            // Parsear fecha con hora de mediodía para evitar problemas de validación
             LocalDate eventDateLocal = LocalDate.parse(dateStr);
             LocalDateTime eventDate = eventDateLocal.atTime(12, 0); // 12:00 PM
 
@@ -464,9 +422,6 @@ public class CommandExecutor {
     }
 
     private String executeProdAddFood(List<String> tokens) {
-        // Formato: prod addFood <id> "<name>" <price> <date> <maxPeople>
-        // Ejemplo: prod addFood 23459 "Restaurante Asador" 50 2025-12-21 40
-
         try {
             if (tokens.size() < 7) {
                 return "Usage:  prod addFood <id> \"<name>\" <price> <date:yyyy-MM-dd> <maxPeople>";
@@ -478,11 +433,9 @@ public class CommandExecutor {
             String dateStr = tokens.get(5);
             int maxPeople = Integer.parseInt(tokens.get(6));
 
-            // Parsear fecha con hora de mediodía
             LocalDate eventDateLocal = LocalDate.parse(dateStr);
             LocalDateTime eventDate = eventDateLocal.atTime(12, 0); // 12:00 PM
 
-            // Fecha de caducidad = fecha del evento
             LocalDate expirationDate = eventDateLocal;
 
             FoodProduct food = productService.createFoodProduct(id, name, price, eventDate, maxPeople, expirationDate);
@@ -506,7 +459,6 @@ public class CommandExecutor {
         StringBuilder sb = new StringBuilder();
         sb.append("Catalog:\n");
 
-        // Ordenar productos por ID
         products.sort((p1, p2) -> {
             try {
                 int id1 = Integer.parseInt(p1.getId());
@@ -517,12 +469,10 @@ public class CommandExecutor {
             }
         });
 
-        // Añadir productos
         for (Product product : products) {
             sb.append("  ").append(product.toString()).append("\n");
         }
 
-        // Añadir servicios
         for (ServiceProduct serviceProduct : serviceProducts) {
             sb.append("  ").append(serviceProduct.toString()).append("\n");
         }
@@ -564,8 +514,6 @@ public class CommandExecutor {
         }
     }
 
-    // ==================== COMANDOS TICKET ====================
-
     private String executeTicket(List<String> tokens) {
         if (tokens.size() < 2) {
             return "Usage: ticket new|add|remove|print|list [args]";
@@ -590,38 +538,30 @@ public class CommandExecutor {
     }
 
     private String executeTicketNew(List<String> tokens) {
-        // Formato 1: ticket new <cashId> <clientId>
-        // Formato 2: ticket new <id> <cashId> <clientId>
-        // Formato 3: ticket new <id> <cashId> <clientId> -[c|p|s]
-
         try {
             String ticketId = null;
             String cashId;
             String clientId;
-            TicketMode mode = TicketMode.BASIC; // Default:  -p (solo productos)
+            TicketMode mode = TicketMode.BASIC;
 
             if (tokens.size() >= 6) {
-                // Formato 3: con ID y opción
                 ticketId = tokens.get(2);
                 cashId = tokens.get(3);
                 clientId = tokens.get(4);
                 String option = tokens.get(5);
 
-                // Parsear opción -c, -p, -s
                 if (option. equals("-c")) {
-                    mode = TicketMode.DETAILED; // Combinado (productos + servicios)
+                    mode = TicketMode.DETAILED;
                 } else if (option.equals("-p")) {
-                    mode = TicketMode.BASIC; // Solo productos
+                    mode = TicketMode.BASIC;
                 } else if (option.equals("-s")) {
-                    mode = TicketMode.DETAILED; // Solo servicios (usa DETAILED)
+                    mode = TicketMode.DETAILED;
                 }
             } else if (tokens.size() >= 5) {
-                // Formato 2: con ID
                 ticketId = tokens.get(2);
                 cashId = tokens.get(3);
                 clientId = tokens.get(4);
             } else if (tokens.size() >= 4) {
-                // Formato 1: sin ID (autogenerado)
                 cashId = tokens.get(2);
                 clientId = tokens.get(3);
             } else {
@@ -631,10 +571,8 @@ public class CommandExecutor {
             Ticket ticket;
 
             if (ticketId != null) {
-                // Crear con ID específico
                 ticket = ticketService.createTicketWithId(ticketId, cashId, clientId, mode);
             } else {
-                // Crear con ID autogenerado
                 ticket = ticketService.createTicket(cashId, clientId, mode);
             }
 
@@ -646,8 +584,6 @@ public class CommandExecutor {
     }
 
     private String executeTicketAdd(List<String> tokens) {
-        // Formato:  ticket add <ticketId> <cashId> <productId|serviceId> <quantity> [--p<txt> --p<txt>]
-
         try {
             if (tokens.size() < 5) {
                 return "Usage:  ticket add <ticketId> <cashId> <prodId> <amount> [--p<txt> --p<txt>]";
@@ -657,17 +593,13 @@ public class CommandExecutor {
             String cashId = tokens.get(3);
             String itemId = tokens.get(4);
 
-            // Validar cashier (por ahora solo verificar que existe)
             userService.findCashierById(cashId);
 
-            // Detectar si es servicio (termina en S) o producto
             if (itemId.endsWith("S")) {
-                // Es un servicio
                 ticketService.addServiceToTicket(ticketId, itemId, 1); // Los servicios son cantidad 1
             } else {
                 int quantity = Integer.parseInt(tokens.get(5));
 
-                // Detectar personalizaciones (tokens que empiezan con --p)
                 List<String> personalizations = new ArrayList<>();
                 for (int i = 6; i < tokens.size(); i++) {
                     if (tokens.get(i).startsWith("--p")) {
@@ -677,15 +609,12 @@ public class CommandExecutor {
                 }
 
                 if (! personalizations.isEmpty()) {
-                    // Añadir productos personalizados
                     ticketService.addPersonalizedProductToTicket(ticketId, itemId, quantity, personalizations);
                 } else {
-                    // Añadir producto normal
                     ticketService.addProductToTicket(ticketId, itemId, quantity);
                 }
             }
 
-            // Mostrar el ticket completo después de añadir
             Ticket ticket = ticketService.findTicketById(ticketId);
             return ticket.formatForDisplay() + "\nticket add: ok";
 
@@ -697,8 +626,6 @@ public class CommandExecutor {
     }
 
     private String executeTicketRemove(List<String> tokens) {
-        // Formato: ticket remove <ticketId> <cashId> <prodId>
-
         try {
             if (tokens.size() < 5) {
                 return "Usage: ticket remove <ticketId> <cashId> <prodId>";
@@ -708,10 +635,8 @@ public class CommandExecutor {
             String cashId = tokens.get(3);
             String productId = tokens.get(4);
 
-            // Validar cashier
             userService.findCashierById(cashId);
 
-            // Eliminar todas las líneas con ese producto
             ticketService.removeProductFromTicket(ticketId, productId);
 
             // Mostrar el ticket después de eliminar
@@ -724,8 +649,6 @@ public class CommandExecutor {
     }
 
     private String executeTicketPrint(List<String> tokens) {
-        // Formato: ticket print <ticketId> <cashId>
-
         try {
             if (tokens.size() < 4) {
                 return "Usage:  ticket print <ticketId> <cashId>";
@@ -734,13 +657,10 @@ public class CommandExecutor {
             String ticketId = tokens.get(2);
             String cashId = tokens.get(3);
 
-            // Validar cashier
             userService.findCashierById(cashId);
 
-            // Cerrar el ticket (esto añade el timestamp al ID)
             Ticket ticket = ticketService.closeTicket(ticketId);
 
-            // Mostrar el ticket (ya ordenado alfabéticamente)
             return ticket. formatForDisplay() + "\nticket print: ok";
 
         } catch (Exception e) {
@@ -749,8 +669,6 @@ public class CommandExecutor {
     }
 
     private String executeTicketList(List<String> tokens) {
-        // Formato: ticket list
-
         try {
             List<Ticket> tickets = ticketService.findAllTickets();
 
@@ -758,7 +676,6 @@ public class CommandExecutor {
                 return "Ticket List:\nticket list: ok";
             }
 
-            // Ordenar por cashier ID
             tickets.sort((t1, t2) -> t1.getCashier().getId().compareTo(t2.getCashier().getId()));
 
             StringBuilder sb = new StringBuilder();
@@ -779,9 +696,6 @@ public class CommandExecutor {
         }
     }
 
-
-
-    // ==================== AYUDA ====================
 
     private String getHelpMessage() {
         return """

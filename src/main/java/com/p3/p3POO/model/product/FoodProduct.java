@@ -52,7 +52,6 @@ public class FoodProduct extends Event {
         LocalDate eventDay = eventDate.toLocalDate();
         long daysBetween = ChronoUnit.DAYS.between(currentDate, eventDay);
 
-        // Verificar que no haya caducado
         boolean notExpired = currentDate. isBefore(expirationDate) || currentDate.isEqual(expirationDate);
 
         return daysBetween >= MIN_PLANNING_DAYS && notExpired;

@@ -4,7 +4,6 @@ import com.p3.p3POO.model.enums.TCategory;
 import com.p3.p3POO.model.enums.TicketMode;
 import com.p3.p3POO.model.enums.TicketState;
 import com.p3.p3POO.model.product.BasicProduct;
-import com.p3.p3POO.model.product.Event;
 import com.p3.p3POO.model.product.Product;
 import com.p3.p3POO.model.product.ProductPersonalized;
 import com.p3.p3POO.model.user.Cashier;
@@ -23,7 +22,7 @@ import java.util.Map;
 public class Ticket {
 
     @Id
-    private String id;  // Formato: YY-MM-dd-HH: mm-XXXXX (con fecha cierre al cerrar)
+    private String id;
 
     @Column
     private String displayId;
@@ -34,7 +33,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketMode mode;  // BASIC (productos), DETAILED (empresa con servicios)
+    private TicketMode mode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cashier_id", nullable = false)
@@ -53,7 +52,6 @@ public class Ticket {
     @Column
     private LocalDateTime closeDate;
 
-    // Constructor sin argumentos (JPA)
     public Ticket() {
         this.state = TicketState.EMPTY;
         this.mode = TicketMode.BASIC;
@@ -69,10 +67,9 @@ public class Ticket {
         this.openDate = LocalDateTime.now();
     }
 
-    // Constructor completo
     public Ticket(String id, Cashier cashier, Client client, TicketMode mode) {
         this.id = id;
-        this.displayId = id; // Inicialmente igual al ID
+        this.displayId = id;
         this.cashier = cashier;
         this. client = client;
         this. state = TicketState.EMPTY;
@@ -185,7 +182,7 @@ public class Ticket {
 
     public void close() {
         if (this.state == TicketState.CLOSE) {
-            return; // Ya está cerrado
+            return;
         }
 
         this.state = TicketState.CLOSE;
@@ -200,7 +197,6 @@ public class Ticket {
                 if (line1.isProduct() && line2.isProduct()) {
                     return line1.getProduct().getName().compareTo(line2.getProduct().getName());
                 }
-                // Servicios van primero
                 if (line1.isService() && line2.isProduct()) {
                     return -1;
                 }
@@ -260,7 +256,6 @@ public class Ticket {
                 Product product = line.getProduct();
                 double linePrice = product.getBasePrice() * line.getQuantity();
 
-                // Aplicar descuento solo si hay ≥2 productos de esa categoría
                 if (product.getCategory() != null) {
                     List<TicketLine> categoryLines = productsByCategory.get(product.getCategory());
                     int totalQuantity = categoryLines. stream().mapToInt(TicketLine:: getQuantity).sum();
@@ -276,7 +271,7 @@ public class Ticket {
         }
 
         if (mode == TicketMode.DETAILED && hasServices() && hasProducts()) {
-            finalPrice = finalPrice * 0.70; // 30% de descuento
+            finalPrice = finalPrice * 0.70;
         }
 
         return finalPrice;
@@ -381,7 +376,7 @@ public class Ticket {
      * Calcula el descuento UNITARIO de un producto (considerando personalizaciones)
      */
     private double calculateUnitDiscount(Product product) {
-        if (product. getCategory() == null) {
+        if (product.getCategory() == null) {
             return 0.0;
         }
 
@@ -416,14 +411,14 @@ public class Ticket {
     }
 
     public void closeTicket() {
-        if (state == TicketState. CLOSE) {
+        if (state == TicketState.CLOSE) {
             return;
         }
 
-        this.state = TicketState. CLOSE;
+        this.state = TicketState.CLOSE;
         this.closeDate = LocalDateTime.now();
 
-        DateTimeFormatter formatter = DateTimeFormatter. ofPattern("yy-MM-dd-HH: mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd-HH: mm");
         String timestamp = closeDate.format(formatter);
         this.displayId = id + "-" + timestamp;
 

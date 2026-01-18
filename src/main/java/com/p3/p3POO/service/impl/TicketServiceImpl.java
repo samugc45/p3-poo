@@ -60,7 +60,6 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket createTicketWithId(String ticketId, String cashierId, String clientId, TicketMode mode) {
-        // Validar que el ID no exista
         if (ticketRepository.existsById(ticketId)) {
             throw new DomainException("Ticket already exists:  " + ticketId);
         }
@@ -88,12 +87,10 @@ public class TicketServiceImpl implements TicketService {
 
         ProductPersonalized personalizable = (ProductPersonalized) product;
 
-        // Validar que no supere el máximo de personalizaciones
         if (personalizations.size() > personalizable.getMaxPersonalizations()) {
             throw new DomainException("Exceeded max personalizations:  " + personalizable.getMaxPersonalizations());
         }
 
-        // Crear quantity líneas, cada una con las personalizaciones
         for (int i = 0; i < quantity; i++) {
             TicketLine line = new TicketLine(ticket, personalizable, 1, personalizations);
             ticket.addLine(line);
@@ -174,13 +171,12 @@ public class TicketServiceImpl implements TicketService {
     public void removeLineFromTicket(String ticketId, int lineNumber) {
         Ticket ticket = findTicketById(ticketId);
 
-        if (ticket. getState() == TicketState.CLOSE) {
+        if (ticket.getState() == TicketState.CLOSE) {
             throw new DomainException("Cannot remove lines from a closed ticket");
         }
 
-        List<TicketLine> lines = ticket. getTicketLines();
+        List<TicketLine> lines = ticket.getTicketLines();
 
-        // lineNumber empieza en 1 (no en 0)
         if (lineNumber < 1 || lineNumber > lines.size()) {
             throw new DomainException("Invalid line number: " + lineNumber);
         }
@@ -199,14 +195,12 @@ public class TicketServiceImpl implements TicketService {
             throw new DomainException("Cannot remove products from a closed ticket");
         }
 
-        // Encontrar y eliminar TODAS las líneas con ese producto
         List<TicketLine> linesToRemove = ticket.getTicketLines().stream().filter(line -> line.isProduct() && line.getProduct().getId().equals(productId)).collect(Collectors.toList());
 
         if (linesToRemove.isEmpty()) {
             throw new DomainException("Product not found in ticket:  " + productId);
         }
 
-        // Eliminar todas las líneas
         for (TicketLine line : linesToRemove) {
             ticket.removeLine(line);
         }
@@ -219,7 +213,6 @@ public class TicketServiceImpl implements TicketService {
     public String printTicket(String ticketId) {
         Ticket ticket = findTicketById(ticketId);
 
-        // Elegir estrategia según el modo del ticket
         if (ticket.getMode() == TicketMode.BASIC) {
             return basicPrintStrategy.print(ticket);
         } else {

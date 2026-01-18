@@ -7,11 +7,11 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "products")
-@Inheritance(strategy = InheritanceType. JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Product {
 
     @Id
-    protected String id;  // ← String, no Integer
+    protected String id;
 
     @Column(nullable = false, length = 100)
     protected String name;
@@ -20,7 +20,7 @@ public abstract class Product {
     protected Double basePrice;
 
     @Enumerated(EnumType.STRING)
-    protected TCategory category;  // ← Category, no TCategory
+    protected TCategory category;
 
     protected Product() {}
 
@@ -63,11 +63,9 @@ public abstract class Product {
         this.category = category;
     }
 
-    // Métodos abstractos
     public abstract Double calculateFinalPrice();
     public abstract boolean isValidForDate(LocalDate date);
 
-    // Aplicar descuento por categoría
     public Double applyDiscount(Double price) {
         if (category == null) {
             return price;

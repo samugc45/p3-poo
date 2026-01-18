@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(String id) {
-        if (! productRepository.existsById(id)) {
+        if (!productRepository.existsById(id)) {
             throw new DomainException("Product not found:  " + id);
         }
         productRepository.deleteById(id);
@@ -44,7 +44,6 @@ public class ProductServiceImpl implements ProductService {
     public BasicProduct updateProduct(String id, String field, String value) {
         Product product = productRepository.findById(id).orElseThrow(() -> new DomainException("Product not found:  " + id));
 
-        // Solo se pueden actualizar BasicProduct
         if (!(product instanceof BasicProduct)) {
             throw new DomainException("Only basic products can be updated");
         }
@@ -83,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public BasicProduct createProduct(BasicProduct product) {
-        if (productRepository.existsById(product. getId())) {
+        if (productRepository.existsById(product.getId())) {
             throw new DomainException("Product already exists: " + product.getId());
         }
         return productRepository.save(product);
@@ -91,21 +90,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public BasicProduct createBasicProduct(String name, TCategory category, double price) {
-        // Generar ID autoincrementado
         String id = generateNextProductId();
         BasicProduct product = new BasicProduct(id, name, price, category);
         return productRepository.save(product);
     }
 
     private String generateNextProductId() {
-        // Buscar el primer ID numérico disponible empezando desde 0
         List<Product> products = productRepository.findAll();
 
         int id = 0;
         while (true) {
             String idStr = String.valueOf(id);
-            boolean exists = products.stream()
-                    .anyMatch(p -> p. getId().equals(idStr));
+            boolean exists = products.stream().anyMatch(p -> p.getId().equals(idStr));
 
             if (!exists) {
                 return idStr;
@@ -120,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
             throw new DomainException("Product already exists:  " + id);
         }
 
-        if (! MeetingProduct.canBeCreated(eventDate)) {
+        if (!MeetingProduct.canBeCreated(eventDate)) {
             throw new DomainException("Meeting must be created at least 12 hours in advance");
         }
 
@@ -175,7 +171,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         CustomizableProduct customizable = new CustomizableProduct((BasicProduct) product, maxCustomTexts);
-        // Note: CustomizableProduct needs its own repository or be saved differently
         throw new UnsupportedOperationException("CustomizableProduct persistence not implemented yet");
     }
 

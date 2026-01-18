@@ -20,14 +20,12 @@ public abstract class Event extends Product {
     @Column(nullable = false)
     protected Integer actualPeople;
 
-    // Constructor sin argumentos (JPA)
     protected Event() {
         super();
         this.maxParticipants = 100;
         this.actualPeople = 0;
     }
 
-    // Constructor con parámetros
     protected Event(String id, String name, Double basePrice, LocalDateTime eventDate, Integer maxParticipants) {
         super(id, name, basePrice, null);  // Events NO tienen categoría
         this.eventDate = eventDate;

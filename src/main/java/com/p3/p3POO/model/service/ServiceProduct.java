@@ -10,22 +10,18 @@ import java.time.LocalDate;
 public class ServiceProduct {
 
     @Id
-    private String id;  // Formato: 1S, 2S, 3S, etc.  (numérico + S)
+    private String id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServiceType serviceType;
 
     @Column(nullable = false)
-    private LocalDate maxUsageDate;  // Fecha máxima de uso
+    private LocalDate maxUsageDate;
 
-    // Los servicios NO tienen precio al crearlos (se factura después)
-    // NO tienen nombre (solo ID y tipo)
 
-    // Constructor sin argumentos (JPA)
     public ServiceProduct() {}
 
-    // Constructor completo
     public ServiceProduct(String id, ServiceType serviceType, LocalDate maxUsageDate) {
         this.id = id;
         this.serviceType = serviceType;

@@ -20,7 +20,6 @@ public class DetailedTicketPrintStrategy implements TicketPrintStrategy {
         sb.append("Cashier: ").append(ticket.getCashier().getName())
                 .append(" (").append(ticket.getCashier().getId()).append(")\n");
 
-        // Formatear fecha
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         sb.append("Date: ").append(ticket.getOpenDate().format(formatter)).append("\n");
         sb.append("Mode: ").append(ticket.getMode()).append("\n");

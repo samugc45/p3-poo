@@ -55,18 +55,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<Cashier> findAllCashiers() {
-        return userRepository.findAll().stream()
-                .filter(user -> user instanceof Cashier)
-                .map(user -> (Cashier) user)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().filter(user -> user instanceof Cashier).map(user -> (Cashier) user).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean cashierExists(String employeeCode) {
-        return userRepository.findById(employeeCode)
-                .map(user -> user instanceof Cashier)
-                .orElse(false);
+        return userRepository.findById(employeeCode).map(user -> user instanceof Cashier).orElse(false);
     }
 
     @Override
@@ -76,7 +71,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateDni(String dni) {
-        // Validar formato:  DNI (8 dígitos + letra) o NIE (X/Y/Z + 7 dígitos + letra)
         if (!dni.matches("^[0-9]{8}[A-Z]$") && !dni.matches("^[XYZ][0-9]{7}[A-Z]$")) {
             throw new DomainException("Invalid DNI format: " + dni);
         }
@@ -105,23 +99,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Client createClient(String dni, String name, String email, String cashierId) {
-        // Validar formato de DNI
         validateDni(dni);
 
-        // Validar que no existe email duplicado
         if (userRepository.existsByEmail(email)) {
             throw new DomainException("Email already exists: " + email);
         }
 
-        // Validar que no existe cliente con ese DNI
         if (userRepository.existsById(dni)) {
             throw new DomainException("Client already exists: " + dni);
         }
 
-        // Buscar cajero
         Cashier cashier = findCashierById(cashierId);
 
-        // Crear cliente (sin validación en constructor)
         Client client = new Client(dni, name, email, cashier);
 
         return userRepository.save(client);
@@ -136,27 +125,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Client findClientById(String dni) {
-        return userRepository.findById(dni)
-                .filter(user -> user instanceof Client)
-                .map(user -> (Client) user)
-                .orElseThrow(() -> new DomainException("Client not found: " + dni));
+        return userRepository.findById(dni).filter(user -> user instanceof Client).map(user -> (Client) user).orElseThrow(() -> new DomainException("Client not found: " + dni));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Client> findAllClients() {
-        return userRepository.findAll().stream()
-                .filter(user -> user instanceof Client)
-                .map(user -> (Client) user)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().filter(user -> user instanceof Client).map(user -> (Client) user).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean clientExists(String dni) {
-        return userRepository.findById(dni)
-                .map(user -> user instanceof Client)
-                .orElse(false);
+        return userRepository.findById(dni).map(user -> user instanceof Client).orElse(false);
     }
 
     @Override
@@ -181,9 +162,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public CompanyClient findCompanyClientById(String nif) {
-        return userRepository.findById(nif)
-                .filter(user -> user instanceof CompanyClient)
-                .map(user -> (CompanyClient) user)
-                .orElseThrow(() -> new DomainException("Company client not found: " + nif));
+        return userRepository.findById(nif).filter(user -> user instanceof CompanyClient).map(user -> (CompanyClient) user).orElseThrow(() -> new DomainException("Company client not found: " + nif));
     }
 }

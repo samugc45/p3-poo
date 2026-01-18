@@ -14,16 +14,12 @@ public class CommandParser {
 
         while (matcher. find()) {
             if (matcher.group(1) != null) {
-                // Texto entre comillas
                 tokens.add(matcher.group(1));
             } else if (matcher.group(2) != null) {
-                // Flag de personalización (--pred → "red")
                 tokens.add("--p" + matcher.group(2));
             } else if (matcher.group(3) != null) {
-                // Flag corto (-s, -c, -p)
                 tokens.add("-" + matcher.group(3));
             } else if (matcher.group(4) != null) {
-                // Palabra normal
                 tokens.add(matcher.group(4));
             }
         }

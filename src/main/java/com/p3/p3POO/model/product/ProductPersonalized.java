@@ -20,13 +20,11 @@ public class ProductPersonalized extends Product {
     @Column(name = "personalization")
     private List<String> personalizationList;
 
-    // Constructor vacío (JPA)
     public ProductPersonalized() {
         super();
         this.personalizationList = new ArrayList<>();
     }
 
-    // Constructor completo
     public ProductPersonalized(String id, String name, Double basePrice, TCategory category, Integer maxPersonalizations) {
         super(id, name, basePrice, category);
         this.maxPersonalizations = maxPersonalizations;
@@ -70,7 +68,6 @@ public class ProductPersonalized extends Product {
 
     @Override
     public Double calculateFinalPrice() {
-        // Precio base + 10% por cada personalización
         Double surcharge = personalizationList.size() * basePrice * 0.10;
         Double totalPrice = basePrice + surcharge;
         return applyDiscount(totalPrice);
@@ -94,7 +91,6 @@ public class ProductPersonalized extends Product {
         if (personalizations == null || personalizations.isEmpty()) {
             return toString();
         }
-        // Calcula precio con personalizaciones
         double surcharge = personalizations.size() * basePrice * 0.10;
         double priceWithPersonalizations = basePrice + surcharge;
         return String.format(java.util.Locale.US, "{class: ProductPersonalized, id:%s, name:'%s', category:%s, price:%.1f, maxPersonal:%d, personalizationList:%s}", id, name, category, priceWithPersonalizations, maxPersonalizations, personalizations);

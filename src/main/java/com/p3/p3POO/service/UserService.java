@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface UserService {
 
-    // Cashier operations
     Cashier createCashier(String id, String name, String email);
     Cashier createCashierAutoId(String name, String email);
     Cashier findCashierById(String employeeCode);
@@ -16,14 +15,12 @@ public interface UserService {
     boolean cashierExists(String employeeCode);
     void deleteCashier(String employeeCode);
 
-    // Client operations
     Client createClient(String dni, String name, String email, String cashierCode);
     Client findClientById(String dni);
     List<Client> findAllClients();
     boolean clientExists(String dni);
     void deleteClient(String dni);
 
-    // Company client operations
     CompanyClient createCompanyClient(String nif, String companyName, String email, String cashierCode);
     CompanyClient findCompanyClientById(String nif);
 }

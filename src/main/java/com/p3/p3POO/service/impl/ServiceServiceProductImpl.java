@@ -34,14 +34,12 @@ public class ServiceServiceProductImpl implements ServiceServiceProduct {
 
         for (ServiceProduct s : serviceProducts) {
             try {
-                // ID formato: 1S, 2S, 3S...
                 String idStr = s.getId().replace("S", "");
                 int currentId = Integer.parseInt(idStr);
                 if (currentId > maxId) {
                     maxId = currentId;
                 }
-            } catch (NumberFormatException e) {
-                // Ignorar IDs no numéricos
+            } catch (NumberFormatException ignored) {
             }
         }
 

@@ -18,7 +18,6 @@ public class BasicTicketPrintStrategy implements TicketPrintStrategy {
         sb.append("Client: ").append(ticket.getClient().getName()).append("\n");
         sb.append("Cashier: ").append(ticket.getCashier().getName()).append("\n");
 
-        // Formatear fecha
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         sb.append("Date: ").append(ticket.getOpenDate().format(formatter)).append("\n");
 
@@ -27,7 +26,6 @@ public class BasicTicketPrintStrategy implements TicketPrintStrategy {
         int lineNum = 1;
         for (TicketLine line :  ticket.getTicketLines()) {
             if (line.isProduct()) {
-                // Formatear línea por línea sin el símbolo € dentro del format
                 String formattedPrice = String.format(Locale. US, "%.2f", line.getTotalPrice());
                 sb.append(lineNum).append(". ")
                         .append(line.getProduct().getName())
@@ -39,7 +37,6 @@ public class BasicTicketPrintStrategy implements TicketPrintStrategy {
 
         sb.append("============================\n");
 
-        // Formatear total
         String formattedTotal = String.format(Locale.US, "%.2f", ticket.calculateTotal());
         sb.append("TOTAL:  ").append(formattedTotal).append("€\n");
 

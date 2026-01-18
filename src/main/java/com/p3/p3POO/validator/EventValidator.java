@@ -31,7 +31,6 @@ public class EventValidator {
         LocalDate now = LocalDate.now();
         LocalDate eventDay = eventDate.toLocalDate();
 
-        // Validar antelación de 3 días
         long daysBetween = ChronoUnit.DAYS.between(now, eventDay);
         if (daysBetween < MIN_FOOD_DAYS) {
             throw new DomainException(String.format("Food event must be created at least %d days in advance. Days remaining: %d", MIN_FOOD_DAYS, daysBetween));
