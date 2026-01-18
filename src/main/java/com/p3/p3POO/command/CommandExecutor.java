@@ -1,13 +1,11 @@
 package com.p3.p3POO.command;
 
-import com.p3.p3POO.factory.TicketFactory;
 import com.p3.p3POO.model.product.*;
 import com.p3.p3POO.model.service.ServiceProduct;
 import com.p3.p3POO.service.ProductService;
 import com.p3.p3POO.service.ServiceServiceProduct;
 import com.p3.p3POO.service.TicketService;
 import com.p3.p3POO.service.UserService;
-import com.p3.p3POO.strategy.BasicTicketPrintStrategy;
 import com.p3.p3POO.strategy.DetailedTicketPrintStrategy;
 import com.p3.p3POO.model.Ticket;
 import com.p3.p3POO.model.enums.ServiceType;
@@ -31,24 +29,16 @@ public class CommandExecutor {
     private final ProductService productService;
     private final ServiceServiceProduct serviceServiceProduct;
     private final TicketService ticketService;
-    private final TicketFactory ticketFactory;
-    private final BasicTicketPrintStrategy basicPrintStrategy;
-    private final DetailedTicketPrintStrategy detailedPrintStrategy;
 
     public CommandExecutor(UserService userService,
                           ProductService productService,
                           ServiceServiceProduct serviceServiceProduct,
                           TicketService ticketService,
-                          TicketFactory ticketFactory,
-                          BasicTicketPrintStrategy basicPrintStrategy,
                           DetailedTicketPrintStrategy detailedPrintStrategy) {
         this.userService = userService;
         this.productService = productService;
         this.serviceServiceProduct = serviceServiceProduct;
         this. ticketService = ticketService;
-        this.ticketFactory = ticketFactory;
-        this.basicPrintStrategy = basicPrintStrategy;
-        this. detailedPrintStrategy = detailedPrintStrategy;
     }
 
     public String execute(String commandLine) {
@@ -93,7 +83,6 @@ public class CommandExecutor {
     }
 
     private String executeEcho(List<String> tokens) {
-        // Formato: echo "texto"
         if (tokens.size() < 2) {
             return "Usage: echo \"<text>\"";
         }
@@ -208,9 +197,7 @@ public class CommandExecutor {
 
             for (Ticket ticket : tickets) {
                 String idToShow = ticket.getDisplayId();
-                sb.append("  ").append(idToShow)
-                        .append("->").append(ticket.getState())
-                        .append("\n");
+                sb.append("  ").append(idToShow).append("->").append(ticket.getState()).append("\n");
             }
 
             sb.append("cash tickets: ok");
@@ -405,7 +392,7 @@ public class CommandExecutor {
             int maxPeople = Integer.parseInt(tokens.get(6));
 
             LocalDate eventDateLocal = LocalDate.parse(dateStr);
-            LocalDateTime eventDate = eventDateLocal.atTime(12, 0); // 12:00 PM
+            LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
 
             MeetingProduct meeting = productService.createMeetingProduct(id, name, price, eventDate, maxPeople);
             return meeting.toString() + "\nprod addMeeting:  ok";
@@ -430,7 +417,7 @@ public class CommandExecutor {
             int maxPeople = Integer.parseInt(tokens.get(6));
 
             LocalDate eventDateLocal = LocalDate.parse(dateStr);
-            LocalDateTime eventDate = eventDateLocal.atTime(12, 0); // 12:00 PM
+            LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
 
             LocalDate expirationDate = eventDateLocal;
 
@@ -635,7 +622,6 @@ public class CommandExecutor {
 
             ticketService.removeProductFromTicket(ticketId, productId);
 
-            // Mostrar el ticket después de eliminar
             Ticket ticket = ticketService.findTicketById(ticketId);
             return ticket.formatForDisplay() + "\nticket remove: ok";
 

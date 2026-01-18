@@ -12,7 +12,7 @@ public class CommandParser {
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|--p(\\w+)|-(\\w+)|(\\S+)");
         Matcher matcher = pattern.matcher(commandLine);
 
-        while (matcher. find()) {
+        while (matcher.find()) {
             if (matcher.group(1) != null) {
                 tokens.add(matcher.group(1));
             } else if (matcher.group(2) != null) {
@@ -31,7 +31,7 @@ public class CommandParser {
 
         for (String token : tokens) {
             if (token.startsWith("--p")) {
-                personalizations.add(token.substring(3)); // Quitar "--p"
+                personalizations.add(token.substring(3));
             }
         }
 
