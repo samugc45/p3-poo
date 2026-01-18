@@ -341,13 +341,12 @@ public class CommandExecutor {
             }
 
             if (tokens.size() == 5) {
-                String name = tokens.get(2);
+                String name = tokens. get(2);
                 String categoryStr = tokens.get(3);
                 double price = Double.parseDouble(tokens.get(4));
 
                 TCategory category = TCategory.valueOf(categoryStr.toUpperCase());
-                String id = "0";
-                BasicProduct product = productService.createBasicProduct(id, name, price, category);
+                BasicProduct product = productService.createBasicProduct(name, category, price);
                 return product.toString() + "\nprod add: ok";
             }
 
@@ -381,21 +380,34 @@ public class CommandExecutor {
 
     private String executeProdAddMeeting(List<String> tokens) {
         try {
-            if (tokens.size() < 7) {
-                return "Usage:  prod addMeeting <id> \"<name>\" <price> <date: yyyy-MM-dd> <maxPeople>";
+            if (tokens.size() == 7) {
+                String id = tokens.get(2);
+                String name = tokens.get(3);
+                double price = Double.parseDouble(tokens.get(4));
+                String dateStr = tokens.get(5);
+                int maxPeople = Integer.parseInt(tokens.get(6));
+
+                LocalDate eventDateLocal = LocalDate.parse(dateStr);
+                LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
+
+                MeetingProduct meeting = productService.createMeetingProduct(id, name, price, eventDate, maxPeople);
+                return meeting.toString() + "\nprod addMeeting: ok";
             }
 
-            String id = tokens.get(2);
-            String name = tokens.get(3);
-            double price = Double.parseDouble(tokens.get(4));
-            String dateStr = tokens.get(5);
-            int maxPeople = Integer.parseInt(tokens.get(6));
+            if (tokens.size() == 6) {
+                String name = tokens.get(2);
+                double price = Double.parseDouble(tokens.get(3));
+                String dateStr = tokens.get(4);
+                int maxPeople = Integer.parseInt(tokens.get(5));
 
-            LocalDate eventDateLocal = LocalDate.parse(dateStr);
-            LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
+                LocalDate eventDateLocal = LocalDate.parse(dateStr);
+                LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
 
-            MeetingProduct meeting = productService.createMeetingProduct(id, name, price, eventDate, maxPeople);
-            return meeting.toString() + "\nprod addMeeting:  ok";
+                MeetingProduct meeting = productService.createMeetingProduct(name, price, eventDate, maxPeople);
+                return meeting.toString() + "\nprod addMeeting: ok";
+            }
+
+            return "Usage:  prod addMeeting [<id>] \"<name>\" <price> <date: yyyy-MM-dd> <maxPeople>";
 
         } catch (DomainException e) {
             return "Error: " + e.getMessage();
@@ -403,26 +415,38 @@ public class CommandExecutor {
             return "Error processing ->prod addMeeting ->Error adding product";
         }
     }
-
     private String executeProdAddFood(List<String> tokens) {
         try {
-            if (tokens.size() < 7) {
-                return "Usage:  prod addFood <id> \"<name>\" <price> <date:yyyy-MM-dd> <maxPeople>";
+            if (tokens.size() == 7) {
+                String id = tokens.get(2);
+                String name = tokens.get(3);
+                double price = Double.parseDouble(tokens.get(4));
+                String dateStr = tokens.get(5);
+                int maxPeople = Integer.parseInt(tokens.get(6));
+
+                LocalDate eventDateLocal = LocalDate.parse(dateStr);
+                LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
+                LocalDate expirationDate = eventDateLocal;
+
+                FoodProduct food = productService.createFoodProduct(id, name, price, eventDate, maxPeople, expirationDate);
+                return food.toString() + "\nprod addFood: ok";
             }
 
-            String id = tokens. get(2);
-            String name = tokens.get(3);
-            double price = Double.parseDouble(tokens.get(4));
-            String dateStr = tokens.get(5);
-            int maxPeople = Integer.parseInt(tokens.get(6));
+            if (tokens.size() == 6) {
+                String name = tokens.get(2);
+                double price = Double.parseDouble(tokens.get(3));
+                String dateStr = tokens.get(4);
+                int maxPeople = Integer.parseInt(tokens.get(5));
 
-            LocalDate eventDateLocal = LocalDate.parse(dateStr);
-            LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
+                LocalDate eventDateLocal = LocalDate.parse(dateStr);
+                LocalDateTime eventDate = eventDateLocal.atTime(12, 0);
+                LocalDate expirationDate = eventDateLocal;
 
-            LocalDate expirationDate = eventDateLocal;
+                FoodProduct food = productService.createFoodProduct(name, price, eventDate, maxPeople, expirationDate);
+                return food.toString() + "\nprod addFood: ok";
+            }
 
-            FoodProduct food = productService.createFoodProduct(id, name, price, eventDate, maxPeople, expirationDate);
-            return food.toString() + "\nprod addFood: ok";
+            return "Usage: prod addFood [<id>] \"<name>\" <price> <date:yyyy-MM-dd> <maxPeople>";
 
         } catch (DomainException e) {
             return "Error: " + e.getMessage();
@@ -430,7 +454,6 @@ public class CommandExecutor {
             return "Error processing ->prod addFood ->Error adding product";
         }
     }
-
     private String executeProdList(List<String> tokens) {
         List<Product> products = productService.findAllProducts();
         List<ServiceProduct> serviceProducts = serviceServiceProduct.findAllServices();

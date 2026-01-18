@@ -125,6 +125,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public MeetingProduct createMeetingProduct(String name, Double price, LocalDateTime eventDate, Integer maxParticipants) {
+        String id = generateNextProductId();
+
+        if (! MeetingProduct.canBeCreated(eventDate)) {
+            throw new DomainException("Meeting must be created at least 12 hours in advance");
+        }
+
+        MeetingProduct product = new MeetingProduct(id, name, price, eventDate, maxParticipants);
+        return productRepository.save(product);
+    }
+
+    @Override
     public FoodProduct createFoodProduct(String id, String name, Double price, LocalDateTime eventDate, Integer maxParticipants, LocalDate expirationDate) {
         if (productRepository.existsById(id)) {
             throw new DomainException("Product already exists: " + id);
@@ -137,7 +149,17 @@ public class ProductServiceImpl implements ProductService {
         FoodProduct product = new FoodProduct(id, name, price, eventDate, maxParticipants, expirationDate);
         return productRepository.save(product);
     }
+    @Override
+    public FoodProduct createFoodProduct(String name, Double price, LocalDateTime eventDate, Integer maxParticipants, LocalDate expirationDate) {
+        String id = generateNextProductId();
 
+        if (!FoodProduct.canBeCreated(eventDate, expirationDate)) {
+            throw new DomainException("Food event must be created at least 3 days in advance and not be expired");
+        }
+
+        FoodProduct product = new FoodProduct(id, name, price, eventDate, maxParticipants, expirationDate);
+        return productRepository.save(product);
+    }
     @Override
     @Transactional(readOnly = true)
     public Product findProductById(String id) {

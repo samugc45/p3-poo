@@ -16,6 +16,9 @@ public interface ProductService {
     BasicProduct updateProduct(String id, String field, String value);
     BasicProduct createProduct(BasicProduct product);
     BasicProduct createBasicProduct(String name, TCategory category, double price);
+    MeetingProduct createMeetingProduct(String name, Double price, LocalDateTime eventDate, Integer maxParticipants);
+    FoodProduct createFoodProduct(String name, Double price, LocalDateTime eventDate, Integer maxParticipants, LocalDate expirationDate);
+
 
     Product findProductById(String id);
     List<Product> findAllProducts();
